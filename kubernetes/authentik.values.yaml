@@ -1,0 +1,26 @@
+# Authentik Configuration
+# See https://docs.goauthentik.io/docs/install-config/install/kubernetes#set-values
+authentik:
+  secret_key: ""
+  error_reporting:
+    enabled: false
+  postgresql:
+    password: ""
+
+server:
+  ingress:
+    ingressClassName: nginx
+    enabled: true
+    hosts:
+      - auth-service.localhost
+
+postgresql:
+  enabled: true
+  auth:
+    password: ""
+
+redis:
+  enabled: true
+
+bootstrap:
+  enabled: true
