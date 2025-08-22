@@ -33,4 +33,12 @@ helm upgrade --install authentik authentik/authentik \
     --namespace authentik --create-namespace
 echo "Deployed Auth Service (Authentik)."
 
+echo "Deploying Social Recipe Application..."
+kubectl create namespace social-recipe
+kubectl apply -f web-app.deployment.yaml -n social-recipe
+kubectl rollout restart deployment web-app -n social-recipe
+kubectl apply -f web-app.ingress.yaml -n social-recipe
+kubectl apply -f web-app.service.yaml -n social-recipe
+echo "Deployed Social Recipe Application."
+
 echo "🚀 Application deployed successfully."
