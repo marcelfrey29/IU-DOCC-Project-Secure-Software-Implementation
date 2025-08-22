@@ -1,4 +1,5 @@
 import { siteConfig } from "@/config/site";
+import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
 import {
     NavbarBrand,
@@ -9,9 +10,12 @@ import {
     NavbarMenuToggle,
     Navbar as NextUINavbar,
 } from "@heroui/navbar";
+import { useAuth } from "react-oidc-context";
+import { BootstrapIcon } from "./icons";
 import { ThemeSwitch } from "./theme-switch";
 
 export const Navbar = () => {
+    const auth = useAuth();
     return (
         <NextUINavbar maxWidth="xl" position="sticky">
             {/* Mobile Menu */}
@@ -57,6 +61,29 @@ export const Navbar = () => {
 
             {/* Action (right) */}
             <NavbarContent className="basis-1 pl-4" justify="end">
+                {auth.isAuthenticated ? (
+                    <>
+                        <NavbarItem>
+                            <Link id="a" href="/profile">
+                                <BootstrapIcon
+                                    name="person-fill"
+                                    className="mr-1"
+                                />{" "}
+                                Profile
+                            </Link>
+                        </NavbarItem>
+                    </>
+                ) : (
+                    <>
+                        <Button
+                            onClick={async () =>
+                                void (await auth.signinRedirect())
+                            }
+                        >
+                            <BootstrapIcon name="person" /> Login
+                        </Button>
+                    </>
+                )}
                 <ThemeSwitch />
             </NavbarContent>
         </NextUINavbar>
