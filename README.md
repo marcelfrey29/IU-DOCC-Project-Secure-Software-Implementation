@@ -18,5 +18,13 @@
     - _The default username is `akadmin`_ (not needed here, just as a reference)
     - Fill out the form (add any valid email e.g. `akadmin@example.com` and select a password for the default user)
     - Click "Continue" (_You should now see the Authentik Dashboard_)
-
+- Setup Authentik (Auth Service)
+    - Open http://auth-service.localhost/ and log-in as admin user (`akadmin`)
+    - Go to "Settings" (Gear in the upper right) -> "Tokens and App Passwords"
+    - Click "Create Token", add `terraform` as `identifier` and click create
+    - Add the token to the `token` field of the `authentik` provider in `terraform/main.tf`
+    - Terraform can't resolve `auth-service.localhost` without a host entry, so we need to create one
+        - Edit the `/etc/hosts` file and add the following line: `127.0.0.1    auth-service.localhost`
+    - Run `terraform init` and `terraform apply`, confirm with `yes`
+- _The setup is now complete_ 🥳
 
