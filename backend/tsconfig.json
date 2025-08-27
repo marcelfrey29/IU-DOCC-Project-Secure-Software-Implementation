@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "lib": ["es2021"],
+        "target": "esnext",
+        "module": "nodenext",
+        "strict": true,
+        "verbatimModuleSyntax": true,
+        "skipLibCheck": true,
+        "types": ["node"],
+        "outDir": "./dist",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "sourceMap": true
+    },
+    "exclude": ["node_modules"]
+}
