@@ -33,6 +33,17 @@ helm upgrade --install authentik authentik/authentik \
     --namespace authentik --create-namespace
 echo "Deployed Auth Service (Authentik)."
 
+# Application Namspace
+kubectl create namespace social-recipe
+
+# Database for the Social Recipe Service (Backend)
+echo "Deploying Backend Database (PostgreSQL)..."
+kubectl apply -f postgres.pv.yaml -n social-recipe
+kubectl apply -f postgres.pvc.yaml -n social-recipe
+envsubst < postgres.statefulset.yaml | kubectl apply -f - -n social-recipe
+kubectl apply -f postgres.service.yaml -n social-recipe
+echo "Deployed Backend Database (PostgreSQL)."
+
 echo "Deploying Social Recipe Application..."
 kubectl create namespace social-recipe
 kubectl apply -f web-app.deployment.yaml -n social-recipe

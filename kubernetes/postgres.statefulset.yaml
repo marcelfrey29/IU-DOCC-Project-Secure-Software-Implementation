@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  serviceName: postgres
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:17.6
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: POSTGRES_USER
+              value: ${SOCIAL_RECIPE_DB_USER}
+            - name: POSTGRES_PASSWORD
+              value: ${SOCIAL_RECIPE_DB_PASSWORD}
+            - name: POSTGRES_DB
+              value: socialrecipe
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data/
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres
