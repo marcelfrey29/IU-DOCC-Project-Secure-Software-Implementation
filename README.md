@@ -30,3 +30,35 @@
     - Run `terraform init` and `terraform apply`, confirm with `yes`
 - _The setup is now complete_ 🥳
 
+## Local Development
+
+The PostgreSQL Database is running in Kubernetes and is not publicly available. 
+For local development (e.g. when running `npm run dev` in the `backend/` directory), the K8s service needs to be forwarded to `localhost:5432`.
+
+```bash
+kubectl port-forward -n social-recipe svc/postgres 5432:5432 
+```
+
+#### Reset the PostgreSQL Database
+
+```bash
+# Stop the Database by scaling to zero
+kubectl scale statefulset postgres --replicas=0 -n social-recipe
+
+# Delete the PVC
+kubectl delete pvc postgres -n social-recipe
+
+# Delete the PV
+kubectl delete pv postgres --grace-period=0 --force
+
+# In the `postgres.pv.yaml` file, change the `path` of the `hostPath`.
+# Background: 
+# In Docker Desktop we can't easily clean the local directories, so we just create
+# a new one. Without this, the new PV will provide the already stored database to 
+# the PostgreSQL container which means no no database will be created.
+
+# Redeploy the application
+# All containers of the web app and backend will be restarted so that the newst "latest"
+# image is used.
+./deploy.sh
+```
