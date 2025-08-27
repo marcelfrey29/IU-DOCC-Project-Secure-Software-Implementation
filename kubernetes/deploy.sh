@@ -53,8 +53,9 @@ kubectl apply -f backend.ingress.yaml -n social-recipe
 kubectl apply -f backend.service.yaml -n social-recipe
 echo "Deployed Backend Service."
 
+# Web App (Frontend)
 echo "Deploying Social Recipe Application..."
-kubectl create namespace social-recipe
+(cd ../web-app; docker build . -t ghcr.io/marcelfrey29/iu-docc-secure-software-development-web-app:latest)
 kubectl apply -f web-app.deployment.yaml -n social-recipe
 kubectl rollout restart deployment web-app -n social-recipe
 kubectl apply -f web-app.ingress.yaml -n social-recipe
