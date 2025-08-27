@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: ghcr.io/marcelfrey29/iu-docc-secure-software-development-backend:latest
+          imagePullPolicy: "Never" # Use local image we built
+          env:
+            - name: DB_URL
+              value: postgres # Name of Postgres Service in K8s (static network endpoint)
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "256m"
+            limits:
+              memory: "128Mi"
+              cpu: "512m"
+          ports:
+            - containerPort: 3000
+              name: backend-port
