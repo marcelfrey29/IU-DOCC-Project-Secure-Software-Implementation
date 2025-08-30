@@ -36,11 +36,27 @@ export class RecipesService {
     protected BASE_URL = "http://localhost:3000";
 
     async getRecipes(context: UserContext): Promise<Recipe[]> {
-        throw new Error("Not Implemented.");
+        const result = await fetch(`${this.BASE_URL}/recipes`, {
+            method: "GET",
+            headers: this.getHeaders(context),
+        });
+        if (result.status !== 200) {
+            throw new Error("Error while getting all Recipes.");
+        }
+        const data: RecipeEntity[] = await result.json();
+        return data.map((recipe) => this.transformRecipe(recipe));
     }
 
-    async getRecipe(context: UserContext): Promise<Recipe> {
-        throw new Error("Not Implemented.");
+    async getRecipe(id: number, context: UserContext): Promise<Recipe> {
+        const result = await fetch(`${this.BASE_URL}/recipes/${id}`, {
+            method: "GET",
+            headers: this.getHeaders(context),
+        });
+        if (result.status !== 200) {
+            throw new Error("Error while creating Recipe.");
+        }
+        const data = await result.json();
+        return this.transformRecipe(data);
     }
 
     async createRecipe(recipe: Recipe, context: UserContext): Promise<Recipe> {
@@ -50,7 +66,7 @@ export class RecipesService {
             headers: this.getHeaders(context),
         });
         if (result.status !== 201) {
-            throw new Error("Error while creating Recipe.");
+            throw new Error("Error while getting Recipe.");
         }
         const data = await result.json();
         return this.transformRecipe(data);
@@ -61,12 +77,27 @@ export class RecipesService {
         recipe: Recipe,
         context: UserContext,
     ): Promise<Recipe> {
-        console.log(recipe);
-        throw new Error("Not Implemented.");
+        const result = await fetch(`${this.BASE_URL}/recipes/${id}`, {
+            method: "PUT",
+            body: JSON.stringify(this.transformRecipeEntity(recipe)),
+            headers: this.getHeaders(context),
+        });
+        if (result.status !== 200) {
+            throw new Error("Error while updating Recipe.");
+        }
+        const data = await result.json();
+        return this.transformRecipe(data);
     }
 
-    async deleteRecipe(context: UserContext): Promise<void> {
-        throw new Error("Not Implemented.");
+    async deleteRecipe(id: number, context: UserContext): Promise<void> {
+        const result = await fetch(`${this.BASE_URL}/recipes/${id}`, {
+            method: "DELETE",
+            headers: this.getHeaders(context),
+        });
+        if (result.status !== 200) {
+            throw new Error("Error while deleting Recipe.");
+        }
+        return undefined;
     }
 
     private getHeaders(context: UserContext): Record<string, string> {
