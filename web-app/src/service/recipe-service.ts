@@ -3,6 +3,7 @@ export interface Recipe {
     ownerUserId?: string;
     title: string;
     description: string;
+    isPrivate: boolean;
     ingredients: Ingredient[];
     steps: Step[];
 }
@@ -24,6 +25,7 @@ interface RecipeEntity {
     ownerUserId?: string;
     title: string;
     description: string;
+    isPrivate: boolean;
     ingredients: string[];
     steps: string[];
 }
