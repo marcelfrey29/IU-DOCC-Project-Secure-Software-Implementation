@@ -7,6 +7,7 @@ export class Recipe {
         ownerUserId: string,
         title: string,
         description: string,
+        isPrivate: boolean,
         ingredients: string,
         steps: string,
     ) {
@@ -14,6 +15,7 @@ export class Recipe {
         this.ownerUserId = ownerUserId;
         this.title = title;
         this.description = description;
+        this.isPrivate = isPrivate;
         this.ingredients = ingredients;
         this.steps = steps;
     }
@@ -29,6 +31,9 @@ export class Recipe {
 
     @Column({ type: "text" })
     description: string;
+
+    @Column({ type: "boolean" })
+    isPrivate: boolean;
 
     // We'll store the ingredients as JSON-encoded string for simplicity
     @Column({ type: "text" })

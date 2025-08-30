@@ -8,12 +8,14 @@ import {
     Unit,
 } from "@/service/recipe-service";
 import { Button } from "@heroui/button";
+import { Checkbox } from "@heroui/checkbox";
 import { Input, Textarea } from "@heroui/input";
 import { NumberInput } from "@heroui/number-input";
 import { Select, SelectItem } from "@heroui/select";
 import { useState } from "react";
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router-dom";
+
 const recipeService = new RecipesService();
 
 export default function CreateRecipesPage() {
@@ -21,6 +23,7 @@ export default function CreateRecipesPage() {
     const auth = useAuth();
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
+    const [isPrivate, setIsPrivate] = useState(false);
     const [ingredients, setIngredients] = useState([
         { name: "", value: 0, unit: "g" },
     ] as Ingredient[]);
@@ -104,6 +107,7 @@ export default function CreateRecipesPage() {
         const recipe: Recipe = {
             title: name,
             description,
+            isPrivate,
             ingredients,
             steps,
         };
@@ -147,6 +151,14 @@ export default function CreateRecipesPage() {
                     value={description}
                     onValueChange={setDescription}
                 />
+                <Checkbox
+                    className="mt-2"
+                    name="isPrivate"
+                    isSelected={isPrivate}
+                    onValueChange={setIsPrivate}
+                >
+                    Private Recipe (This Recipe is only visible to you)
+                </Checkbox>
             </section>
 
             <section className="mt-4">
