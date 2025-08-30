@@ -44,6 +44,11 @@ envsubst < postgres.statefulset.yaml | kubectl apply -f - -n social-recipe
 kubectl apply -f postgres.service.yaml -n social-recipe
 echo "Deployed Backend Database (PostgreSQL)."
 
+# Backend Auth Service Proxy
+echo "Deploying Backend Auth Service Proxy..."
+kubectl apply -f authentik.proxy.service.yaml -n social-recipe
+echo "Deployed Backend Auth Service Proxy."
+
 # Social Recipe Service (Backend)
 echo "Deploying Backend Service..."
 (cd ../backend; docker build . -t ghcr.io/marcelfrey29/iu-docc-secure-software-development-backend:latest)

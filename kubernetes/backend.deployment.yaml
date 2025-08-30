@@ -18,6 +18,8 @@ spec:
           env:
             - name: DB_URL
               value: postgres # Name of Postgres Service in K8s (static network endpoint)
+            - name: AUTH_SERVICE_URL
+              value: "http://authentik-proxy" # Name of the Authentik Service Proxy in K8s (static network endpoint)
           resources:
             requests:
               memory: "64Mi"

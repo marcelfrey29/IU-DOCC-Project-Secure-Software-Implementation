@@ -5,6 +5,8 @@ import NotFoundPage from "./pages/404";
 import ImprintPage from "./pages/imprint";
 import PrivacyPage from "./pages/privacy";
 import ProfilePage from "./pages/profile";
+import RecipesPage from "./pages/recipes";
+import CreateRecipesPage from "./pages/recipes-add";
 
 function App() {
     return (
@@ -12,6 +14,10 @@ function App() {
             {/* Home */}
             <Route element={<IndexPage />} path="/" />
             <Route element={<ProfilePage />} path="/profile" />
+
+            {/* Recipes */}
+            <Route element={<RecipesPage />} path="/recipes" />
+            <Route element={<CreateRecipesPage />} path="/recipes/add" />
 
             {/* Legal */}
             <Route element={<PrivacyPage />} path="/privacy" />

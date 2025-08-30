@@ -4,7 +4,7 @@ WORKDIR /app
 COPY package.json package-lock.json /app/
 RUN npm ci
 COPY . /app/
-RUN npm run build
+RUN npm run build:prod
 
 # Container
 FROM nginx:1.29-bookworm
