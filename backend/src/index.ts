@@ -18,7 +18,9 @@ logger.info({}, "Starting Server...");
 const configService = new ConfigService(logger);
 const dbService = new DatabaseService(logger, configService);
 const JWKS = jose.createRemoteJWKSet(
-    new URL("http://auth-service.localhost/application/o/social-recipe/jwks/"),
+    new URL(
+        `${configService.getAuthServiceUrl()}/application/o/social-recipe/jwks/`,
+    ),
 );
 
 // Setup Hono Server

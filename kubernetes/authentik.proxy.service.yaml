@@ -1,0 +1,13 @@
+# Authentik is running in its own namespace, so the backend can't directly connect to it.
+# To solve this problem, we create a local service in the "social-recipe" namespace which
+# proxies to the actual Authentik service in the other namespace.
+# See https://stackoverflow.com/a/44329470
+kind: Service
+apiVersion: v1
+metadata:
+  name: authentik-proxy
+spec:
+  type: ExternalName
+  externalName: authentik-server.authentik.svc.cluster.local
+  ports:
+    - port: 80
