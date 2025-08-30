@@ -11,8 +11,9 @@
         "format:verify": "biome format .",
         "lint": "biome lint --write .",
         "lint:verify": "biome lint .",
-        "dev": "vite --host",
-        "build": "tsc && vite build",
+        "dev": "vite --host --mode dev",
+        "build": "tsc && vite build --mode dev",
+        "build:prod": "tsc && vite build --mode prod",
         "preview": "vite preview"
     },
     "dependencies": {

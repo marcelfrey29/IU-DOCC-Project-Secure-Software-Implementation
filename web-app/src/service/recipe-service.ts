@@ -33,7 +33,7 @@ export interface UserContext {
 }
 
 export class RecipesService {
-    protected BASE_URL = "http://localhost:3000";
+    protected BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
 
     async getRecipes(context: UserContext): Promise<Recipe[]> {
         const result = await fetch(`${this.BASE_URL}/recipes`, {
