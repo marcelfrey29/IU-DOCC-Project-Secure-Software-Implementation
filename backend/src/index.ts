@@ -102,9 +102,60 @@ app.post("/recipes", async (c) => {
     logger.info({}, "Creating new Recipe for User.");
     recipe.ownerUserId = userId;
 
-    // FIXME: Describe that we store the object without input validator or sanitization.
-    // Link it with the GET Endpoint where the plain data are returned to the client which
-    // then cause a XSS vulnerability (Stored XSS)
+    /**
+     * BUG: https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/issues/20
+     *
+     * # Description
+     *
+     * Improper input sanitization allows Stored XSS.
+     *
+     * The `Recipe` taken from the request is directly persisted in the database without any
+     * validation or sanitization of the data. Malicious input is therfore persisted and later
+     * returned to users when the Recipe is requested.
+     *
+     * Depending on the use case, certain HTML might be allowed. For example bold text should be
+     * supported, so `<b></b>` tags are allowed. `<script></script>` tags should not be allowed.
+     * In this case an explicit blocklist is required. In case an element is missing there, this
+     * could be classified as CWE-184 (Incomplete List of Disallowed Inputs).
+     *
+     * However, in our case we only want to support plain text, so all special characters need to
+     * be sanitized.
+     *
+     * An alternative fix would be to excape data before they are sent to the client (when they
+     * leave the application). An flaw in this implementation would relate to CWE-116 (Improper
+     * Encoding or Escaping of Output).
+     *
+     * However, we want to work with safe data from the beginning, so we need to sanitize the
+     * user input as early as possible.
+     *
+     * Out flaw is part of CWE-96 (Improper Neutralization of Directives in Statically Saved Code
+     * ('Static Code Injection')) at the end, because the malicious code is injeced in the Web
+     * Applications HTML code ultimately leading to CWE-79 (Improper Neutralization of Input
+     * During Web Page Generation ('Cross-site Scripting')) which is caused by CWE-80 (Improper
+     * Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS)) in the browser.
+     *
+     * The concrete sanitization error in this case is CWE-157 (Failure to Sanitize Paired Delimiters)
+     * because the HTML tag angle backet pairs `<` and `>` are not properly escaped.
+     *
+     * # Impact
+     *
+     * Run malicious code in the browser of other users. Violates the integrity (script could run things
+     * on behalf of the user) and availability (script can break the web app).
+     *
+     * # Background
+     *
+     * https://owasp.org/Top10/A03_2021-Injection/
+     * https://cwe.mitre.org/data/definitions/79.html
+     * https://cwe.mitre.org/data/definitions/80.html
+     * https://cwe.mitre.org/data/definitions/96.html
+     * https://cwe.mitre.org/data/definitions/157.html
+     * https://cwe.mitre.org/data/definitions/184.html
+     * https://cwe.mitre.org/data/definitions/116.html
+     *
+     * # Remediation
+     *
+     * Validate and sanitize the user input before persisting it in the database.
+     */
     const storedRecipe = await (await dbService.getDatabaseManager())
         .getRepository(Recipe)
         .save(recipe);
