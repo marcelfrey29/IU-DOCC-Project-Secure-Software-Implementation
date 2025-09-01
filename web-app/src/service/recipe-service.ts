@@ -26,8 +26,8 @@ interface RecipeEntity {
     title: string;
     description: string;
     isPrivate: boolean;
-    ingredients: string[];
-    steps: string[];
+    ingredients: string;
+    steps: string;
 }
 
 export interface UserContext {
@@ -113,18 +113,16 @@ export class RecipesService {
     private transformRecipe(entity: RecipeEntity): Recipe {
         return {
             ...entity,
-            ingredients: entity.ingredients.map(
-                (i) => JSON.parse(i) as Ingredient,
-            ),
-            steps: entity.steps.map((i) => JSON.parse(i) as Step),
+            ingredients: JSON.parse(entity.ingredients),
+            steps: JSON.parse(entity.steps),
         };
     }
 
     private transformRecipeEntity(recipe: Recipe): RecipeEntity {
         return {
             ...recipe,
-            ingredients: recipe.ingredients.map((i) => JSON.stringify(i)),
-            steps: recipe.steps.map((i) => JSON.stringify(i)),
+            ingredients: JSON.stringify(recipe.ingredients),
+            steps: JSON.stringify(recipe.steps),
         };
     }
 }
