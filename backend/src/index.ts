@@ -164,6 +164,69 @@ app.post("/recipes", async (c) => {
     return c.json(storedRecipe, 201);
 });
 
+app.get("/recipes", async (c) => {
+    const userId = c.get("userId");
+
+    /**
+     * BUG: https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/issues/22
+     *
+     * # Description
+     *
+     * The logs include the users access token. Everyone with access to the logs can perform actions
+     * on behalf of the users (while the token is valid).
+     *
+     * Errors related to logging and monitoring are part of OWASP Top 10 A09:2021 (Security Logging
+     * and Monitoring Failures). In this concrete case, the logs include sensitive information which
+     * belongs to the CWE Category CWE-532 Insertion of Sensitive Information into Log File).
+     *
+     * # Impact
+     *
+     * When tokens are logged and there is the change that others use it, it violates the principle of
+     * non-repudation. The user can now deny that he has performed a certain action (regardless
+     * whether he performed it or not). An important goal is non-repduation so that we can clearly say
+     * who has performed what and when.
+     *
+     * In addition, threat actors can perform actions on behalf of the user and access their private
+     * information which violates confidentiality and integrity.
+     *
+     * Only users with access to the logs can perform this attack. However, as security must be implemented
+     * into every layer, we must patch this issue. It's not enough to declear that the log storage and
+     * system needs to be protected against unauthorized access. This is especially true in case of an
+     * internal attacker.
+     *
+     * # Background
+     *
+     * https://owasp.org/Top10/A09_2021-Security_Logging_and_Monitoring_Failures/
+     * https://cwe.mitre.org/data/definitions/532.html
+     *
+     * # Remediation
+     *
+     * Remove the affected element from the log contect and only log context-relevant non-personal data
+     * like the userId (`sub`) or authentication state (`isAuthenticated`).
+     */
+    logger.info(
+        {
+            user: c.req.header("Authorization"),
+        },
+        "User requested all Recipes.",
+    );
+
+    // Get all Recipes from the Database: We need to get all public recipes (`recipe.isPrivate = false`) and
+    // all for authenticated users their private recipes too (`recipe.ownerUserId = :ownerUserId`). With this
+    // approach, proper access control is in place.
+    const recipes = await (await dbService.getDatabaseManager())
+        .getRepository(Recipe)
+        .createQueryBuilder("recipe")
+        .where(
+            "recipe.ownerUserId = :ownerUserId OR recipe.isPrivate = false",
+            { ownerUserId: userId },
+        )
+        .getMany();
+    logger.info({ count: recipes.length }, "Got Recipes for User.");
+
+    return c.json(recipes, 200);
+});
+
 app.get("/recipes/:id", async (c) => {
     // Get Recipe ID from Path Parameter
     let id: number;
