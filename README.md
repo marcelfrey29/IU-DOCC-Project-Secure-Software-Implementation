@@ -62,3 +62,13 @@ kubectl delete pv postgres --grace-period=0 --force
 # image is used.
 ./deploy.sh
 ```
+
+#### Access PostgreSQL Database via CLI
+
+```bash
+# Connect to PostgreSQL Container
+kubectl exec postgres-0 -n social-recipe -it -- /bin/bash
+
+# Run PSQL
+psql --username=social-recipie-db-rw-user socialrecipe
+```
