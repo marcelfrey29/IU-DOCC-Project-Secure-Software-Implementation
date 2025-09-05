@@ -1,8 +1,12 @@
 import { BootstrapIcon } from "@/components/icons";
 import DefaultLayout from "@/layouts/default";
+import { CommentService, RecipeComment } from "@/service/comment-service";
 import { Recipe, RecipesService } from "@/service/recipe-service";
 import { Accordion, AccordionItem } from "@heroui/accordion";
+import { Button } from "@heroui/button";
 import { Card, CardBody } from "@heroui/card";
+import { Divider } from "@heroui/divider";
+import { Input } from "@heroui/input";
 import {
     Table,
     TableBody,
@@ -16,6 +20,7 @@ import { useAuth } from "react-oidc-context";
 import { useParams } from "react-router-dom";
 
 const recipeService = new RecipesService();
+const commentService = new CommentService();
 
 export default function RecipeDetailPage() {
     let { id } = useParams();
@@ -29,9 +34,22 @@ export default function RecipeDetailPage() {
             }),
         );
     };
+
+    const [newComment, setNewComment] = useState("");
+
     useEffect(() => {
         getRecipe();
     }, []);
+
+    const createComment = async () => {
+        const comment: RecipeComment = {
+            comment: newComment,
+        };
+        await commentService.createRecipeComment(parseInt(id!), comment, {
+            accessToken: auth.user?.access_token,
+        });
+        setNewComment(""); // Clear Input Field
+    };
 
     return (
         <DefaultLayout>
@@ -157,6 +175,35 @@ export default function RecipeDetailPage() {
                             </Accordion>
                         </CardBody>
                     </Card>
+                </div>
+            </section>
+
+            <Divider className="mt-4 mb-4"></Divider>
+
+            <section>
+                <div>
+                    <h3 className="text-xl mb-2">Comments</h3>
+                </div>
+
+                <div className="mt-6 mb-8">
+                    <div className="flex">
+                        <Input
+                            className="mr-8"
+                            label="Your Comment"
+                            placeholder="Your feedback, experiences, or suggestions for others..."
+                            variant="faded"
+                            isClearable
+                            value={newComment}
+                            onValueChange={setNewComment}
+                        />
+                        <Button
+                            className="ml-auto h-auto"
+                            onClick={() => createComment()}
+                        >
+                            <BootstrapIcon name="chat-left-dots-fill" />
+                            Add Comment
+                        </Button>
+                    </div>
                 </div>
             </section>
         </DefaultLayout>
