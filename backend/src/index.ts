@@ -530,6 +530,41 @@ app.get("/recipes/:recipeId/comments", async (c) => {
     return c.json(recipeComments, 200);
 });
 
+app.delete("/recipes/:recipeId/comments/:commentId", async (c) => {
+    if (c.get("isAuthenticated") === false) {
+        logger.warn({}, "Deny: Unauthenticated user can't delete comments.");
+    }
+    const userId = c.get("userId");
+    const recipeId = c.req.param("recipeId");
+    const commentId = c.req.param("commentId");
+    logger.info(
+        { userId, recipeId, commentId },
+        "User wants to delete a comment.",
+    );
+
+    const comment = await (await dbService.getDatabaseManager())
+        .getRepository(RecipeComment)
+        .findOneBy({ id: parseInt(commentId) });
+    if (!comment) {
+        logger.warn({ commentId }, "There is no comment with the given ID.");
+        return c.json({}, 404);
+    }
+    if (comment.ownerUserId !== userId) {
+        logger.warn(
+            { userId, commentId },
+            "Deny: The requesting user is not the owener of the comment.",
+        );
+        return c.json({}, 403);
+    }
+
+    await (await dbService.getDatabaseManager())
+        .getRepository(RecipeComment)
+        .delete({ id: parseInt(commentId) });
+
+    logger.info({ commentId, userId }, "Deleted comment.");
+    return c.json({}, 200);
+});
+
 // Run Server
 serve(
     {
