@@ -1,8 +1,12 @@
 import { BootstrapIcon } from "@/components/icons";
 import DefaultLayout from "@/layouts/default";
+import { CommentService, RecipeComment } from "@/service/comment-service";
 import { Recipe, RecipesService } from "@/service/recipe-service";
 import { Accordion, AccordionItem } from "@heroui/accordion";
+import { Button } from "@heroui/button";
 import { Card, CardBody } from "@heroui/card";
+import { Divider } from "@heroui/divider";
+import { Input } from "@heroui/input";
 import {
     Table,
     TableBody,
@@ -16,6 +20,7 @@ import { useAuth } from "react-oidc-context";
 import { useParams } from "react-router-dom";
 
 const recipeService = new RecipesService();
+const commentService = new CommentService();
 
 export default function RecipeDetailPage() {
     let { id } = useParams();
@@ -29,9 +34,40 @@ export default function RecipeDetailPage() {
             }),
         );
     };
+
+    const [comments, setComments] = useState([] as RecipeComment[]);
+    const getComments = async () => {
+        setComments(
+            await commentService.getCommentsForRecipe(parseInt(id ?? ""), {
+                accessToken: auth.user?.access_token,
+            }),
+        );
+    };
+
+    const [newComment, setNewComment] = useState("");
+
     useEffect(() => {
         getRecipe();
+        getComments();
     }, []);
+
+    const createComment = async () => {
+        const comment: RecipeComment = {
+            comment: newComment,
+        };
+        await commentService.createRecipeComment(parseInt(id!), comment, {
+            accessToken: auth.user?.access_token,
+        });
+        getComments();
+        setNewComment(""); // Clear Input Field
+    };
+
+    const deleteComment = async (recipeId: number, commentId: number) => {
+        await commentService.deleteRecipeComment(recipeId, commentId, {
+            accessToken: auth.user?.access_token,
+        });
+        await getComments();
+    };
 
     return (
         <DefaultLayout>
@@ -157,6 +193,86 @@ export default function RecipeDetailPage() {
                             </Accordion>
                         </CardBody>
                     </Card>
+                </div>
+            </section>
+
+            <Divider className="mt-4 mb-4"></Divider>
+
+            <section>
+                <div>
+                    <h3 className="text-xl mb-2">Comments</h3>
+                </div>
+
+                <div>
+                    {comments.length === 0 ? (
+                        <>
+                            <p className="text-sm">
+                                There are no comments yet. Be the first to add
+                                one.
+                            </p>
+                        </>
+                    ) : (
+                        <></>
+                    )}
+                </div>
+                <div>
+                    {comments.map((comment) => (
+                        <>
+                            <Card className="mb-2">
+                                <CardBody>
+                                    <div className="flex">
+                                        <div>
+                                            <p className="text-xs">
+                                                {comment.ownerUserId} said:{" "}
+                                            </p>
+                                            <p>{comment.comment}</p>
+                                        </div>
+                                        <div className="ml-auto">
+                                            {comment.ownerUserId ===
+                                            auth.user?.profile.sub ? (
+                                                <>
+                                                    <Button
+                                                        color="danger"
+                                                        onPress={() =>
+                                                            deleteComment(
+                                                                recipe.id!,
+                                                                comment.id!,
+                                                            )
+                                                        }
+                                                    >
+                                                        <BootstrapIcon name="trash-fill" />
+                                                    </Button>
+                                                </>
+                                            ) : (
+                                                <></>
+                                            )}
+                                        </div>
+                                    </div>
+                                </CardBody>
+                            </Card>
+                        </>
+                    ))}
+                </div>
+
+                <div className="mt-6 mb-8">
+                    <div className="flex">
+                        <Input
+                            className="mr-8"
+                            label="Your Comment"
+                            placeholder="Your feedback, experiences, or suggestions for others..."
+                            variant="faded"
+                            isClearable
+                            value={newComment}
+                            onValueChange={setNewComment}
+                        />
+                        <Button
+                            className="ml-auto h-auto"
+                            onClick={() => createComment()}
+                        >
+                            <BootstrapIcon name="chat-left-dots-fill" />
+                            Add Comment
+                        </Button>
+                    </div>
                 </div>
             </section>
         </DefaultLayout>

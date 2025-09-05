@@ -1,3 +1,5 @@
+import { BaseAPIService, UserContext } from "./base-service";
+
 export interface Recipe {
     id?: number;
     ownerUserId?: string;
@@ -30,13 +32,7 @@ interface RecipeEntity {
     steps: string;
 }
 
-export interface UserContext {
-    accessToken?: string;
-}
-
-export class RecipesService {
-    protected BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
-
+export class RecipesService extends BaseAPIService {
     async getRecipes(context: UserContext): Promise<Recipe[]> {
         const result = await fetch(`${this.BASE_URL}/recipes`, {
             method: "GET",
@@ -100,14 +96,6 @@ export class RecipesService {
             throw new Error("Error while deleting Recipe.");
         }
         return undefined;
-    }
-
-    private getHeaders(context: UserContext): Record<string, string> {
-        const headers: Record<string, string> = {};
-        if (context.accessToken) {
-            headers["authorization"] = `Bearer ${context.accessToken}`;
-        }
-        return headers;
     }
 
     private transformRecipe(entity: RecipeEntity): Recipe {

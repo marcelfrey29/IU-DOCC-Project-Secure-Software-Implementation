@@ -1,5 +1,6 @@
 import { DataSource } from "typeorm";
 import { Recipe } from "../model/Recipe.js";
+import { RecipeComment } from "../model/RecipeComment.js";
 
 export const DatabaseDataSource = new DataSource({
     type: "postgres",
@@ -39,7 +40,7 @@ export const DatabaseDataSource = new DataSource({
     database: "socialrecipe",
     synchronize: true,
     logging: false,
-    entities: [Recipe],
+    entities: [Recipe, RecipeComment],
     migrations: [],
     subscribers: [],
 });
