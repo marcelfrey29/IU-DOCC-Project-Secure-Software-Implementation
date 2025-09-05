@@ -9,6 +9,7 @@ import { requestId } from "hono/request-id";
 import * as jose from "jose";
 import pino from "pino";
 import { Recipe } from "./model/Recipe.js";
+import { RecipeComment } from "./model/RecipeComment.js";
 import { ConfigService } from "./service/ConfigService.js";
 import { DatabaseService } from "./service/DatabaseService.js";
 
@@ -449,6 +450,27 @@ app.delete("/recipes/:id", async (c) => {
 
     // Return success
     return c.json({}, 200);
+});
+
+app.post("/recipes/:recipeId/comments", async (c) => {
+    if (c.get("isAuthenticated") === false) {
+        logger.warn({}, "Denying recipe comment creation for anonymous user.");
+        return c.json({}, 401);
+    }
+
+    const userId = c.get("userId");
+    const recipeId = c.req.param("recipeId");
+    const comment = await c.req.json<RecipeComment>();
+    logger.info({ userId, recipeId }, "Creating new Recipe Comment for User.");
+    comment.recipeId = parseInt(recipeId);
+    comment.ownerUserId = userId;
+
+    const storedComment = await (await dbService.getDatabaseManager())
+        .getRepository(RecipeComment)
+        .save(comment);
+
+    logger.info({}, "Persisted Recipe Comment in Database.");
+    return c.json(storedComment, 201);
 });
 
 // Run Server
