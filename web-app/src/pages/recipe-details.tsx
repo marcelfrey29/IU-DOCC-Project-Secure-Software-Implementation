@@ -62,6 +62,13 @@ export default function RecipeDetailPage() {
         setNewComment(""); // Clear Input Field
     };
 
+    const deleteComment = async (recipeId: number, commentId: number) => {
+        await commentService.deleteRecipeComment(recipeId, commentId, {
+            accessToken: auth.user?.access_token,
+        });
+        await getComments();
+    };
+
     return (
         <DefaultLayout>
             <section className="mt-12″ mb-12">
@@ -219,6 +226,26 @@ export default function RecipeDetailPage() {
                                                 {comment.ownerUserId} said:{" "}
                                             </p>
                                             <p>{comment.comment}</p>
+                                        </div>
+                                        <div className="ml-auto">
+                                            {comment.ownerUserId ===
+                                            auth.user?.profile.sub ? (
+                                                <>
+                                                    <Button
+                                                        color="danger"
+                                                        onPress={() =>
+                                                            deleteComment(
+                                                                recipe.id!,
+                                                                comment.id!,
+                                                            )
+                                                        }
+                                                    >
+                                                        <BootstrapIcon name="trash-fill" />
+                                                    </Button>
+                                                </>
+                                            ) : (
+                                                <></>
+                                            )}
                                         </div>
                                     </div>
                                 </CardBody>

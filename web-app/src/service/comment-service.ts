@@ -45,4 +45,22 @@ export class CommentService extends BaseAPIService {
         const data: RecipeComment = await result.json();
         return data;
     }
+
+    async deleteRecipeComment(
+        recipeId: number,
+        id: number,
+        context: UserContext,
+    ): Promise<void> {
+        const result = await fetch(
+            `${this.BASE_URL}/recipes/${recipeId}/comments/${id}`,
+            {
+                method: "DELETE",
+                headers: this.getHeaders(context),
+            },
+        );
+        if (result.status !== 200) {
+            throw new Error("Error while deleting Comment.");
+        }
+        return undefined;
+    }
 }
