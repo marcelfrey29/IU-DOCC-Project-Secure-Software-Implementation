@@ -10,3 +10,4 @@
 | 6   | [User Access Tokens are logged (#22)](https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/issues/22) | `backend/src/index.ts`| Logging of sensitive information | CWE-532 |
 | 7   | [Raw Exceptions are returned to Clients (#25)](https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/issues/25)|`backend/src/index.ts`|Sensitive information in error response|CWE-201, CWE-209|
 | 8   | [SQL Injection in `GET /recipes/:recipeId/comments` Endpoint (#27)](https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/issues/27)| `backend/src/index.ts` | SQL Injection | CWE-89 |
+| 9   | [Node 18 is EOL & Image is vulnerable (#29)](https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/issues/29)| `backend/Dockerfile` | Outdated & Vulnerable Component | CWE-1104 |
