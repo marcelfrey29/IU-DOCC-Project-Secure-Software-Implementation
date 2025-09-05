@@ -8,6 +8,7 @@ import ProfilePage from "./pages/profile";
 import RecipeDetailPage from "./pages/recipe-details";
 import RecipesPage from "./pages/recipes";
 import CreateRecipesPage from "./pages/recipes-add";
+import UpdateRecipesPage from "./pages/recipes-update";
 
 function App() {
     return (
@@ -20,6 +21,7 @@ function App() {
             <Route element={<RecipesPage />} path="/recipes" />
             <Route element={<CreateRecipesPage />} path="/recipes/add" />
             <Route element={<RecipeDetailPage />} path="/recipes/:id" />
+            <Route element={<UpdateRecipesPage />} path="/recipes/:id/edit" />
 
             {/* Legal */}
             <Route element={<PrivacyPage />} path="/privacy" />
