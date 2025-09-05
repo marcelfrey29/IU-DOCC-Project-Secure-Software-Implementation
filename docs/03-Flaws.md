@@ -9,3 +9,4 @@
 | 5   | [Improper input validation & sanitization before persisting data leads to Stored XSS (#20)](https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/issues/20) | `backend/src/index.ts`| Stored XSS (Backend-Part: Improper Input Validation) | CWE-79, CWE-80, CWE-96, CWE-157, CWE-184, CWE-116 |
 | 6   | [User Access Tokens are logged (#22)](https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/issues/22) | `backend/src/index.ts`| Logging of sensitive information | CWE-532 |
 | 7   | [Raw Exceptions are returned to Clients (#25)](https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/issues/25)|`backend/src/index.ts`|Sensitive information in error response|CWE-201, CWE-209|
+| 8   | [SQL Injection in `GET /recipes/:recipeId/comments` Endpoint (#27)](https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/issues/27)| `backend/src/index.ts` | SQL Injection | CWE-89 |
