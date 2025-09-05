@@ -1,5 +1,8 @@
 # IU-DOCC-Project-Secure-Software-Implementation
 
+> [!CAUTION] 
+> **For educational purposes, this version of the application and infrastructure definition contains common vulnerabilities and flaws!**
+
 ## Prerequisites
 
 - A Kubernetes Cluster (e.g. via Docker Desktop)

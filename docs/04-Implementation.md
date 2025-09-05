@@ -45,3 +45,19 @@ app.use('*', async (c, next) => {
     await next()
 })
 ```
+
+# Vulnerabilities
+
+The application was built without considering security.
+All flaws are documented in [Flaws](03-Flaws.md) alongside their OWASP Top 10 and CWE mapping. 
+
+All security issues have been documented in the codebase. In addition, for every issue a GitHub issue was created and added to the [Secure Application Milestone](https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/milestone/3).
+A [Security Issue Template](https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/blob/main/.github/ISSUE_TEMPLATE/security-issue.md) was added to the repository so that all issues are documented in a standardized way. 
+
+- Description
+- Steps to Reproduce: A list with details for how to reproduce the issue
+- Expected Behaviour: Expected outcome when the "Steps to Reproduce" are performed
+- Actual Behaviour: What is the current result when the "Steps to Reproduce" are performed
+- Impact & Risk
+- Additional Details: Links to documentation, OWASP Top 10, CWE, or other relevant sites
+- Remediations: Steps that should be taken to fix the issue
