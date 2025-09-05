@@ -35,6 +35,48 @@ const app = new Hono();
 // Hono Error Hooks
 app.onError((error, c) => {
     logger.error({ error }, "Internal Server Error.");
+    /**
+     * BUG: https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/issues/25
+     *
+     * # Description
+     *
+     * The error response includes the raw error in the body. Including the error/exveption in the
+     * body can leak sensitive information to the client.
+     *
+     * The Update Recipe Endpoint simulates a crash when performing an database operation to demonstrate
+     * this concept. In this case, the raw exception is returned which includes the raw database driver
+     * error. The SQL Query is included which give threat actors information about system internals.
+     * While "Security by Obscurity" is not a valid concept, we still should keep application internals
+     * internal.
+     *
+     * Exposing internal data can lead to data braches, like the VW Data breach where location data of
+     * 800.000 electric vehicles were breached. In this case the "GET /actuator/heapdump" was publically
+     * reachable, used to get heapdumps. This headpdump included AWS Credentials.
+     * While we're in a singly different setup, this is still a good example.
+     * Source: https://www.youtube.com/watch?v=iHsz6jzjbRc
+     *
+     * This issue is part of OWASP Top 10 A04:2021 (Insecure Design). When sentive information is included
+     * in sent data this is CWE-201 (Insertion of Sensitive Information Into Sent Data). However, in our
+     * concrete case, it's CWE-209 (Generation of Error Message Containing Sensitive Information).
+     *
+     * # Impact
+     *
+     * Sensitive information could be leaked to threat actors and support them in shaping their attack
+     * strategy. Confidentiality is violated.
+     *
+     * # Background
+     *
+     * https://owasp.org/Top10/A04_2021-Insecure_Design/
+     * https://cwe.mitre.org/data/definitions/201.html
+     * https://cwe.mitre.org/data/definitions/209.html
+     *
+     * # Remediation
+     *
+     * There should always be a global exception handler middleawre in place that doesn't return the raw
+     * error to the client.
+     * While this middleware itself is present, the error is not allowed to be returned and therefore must
+     * be removed from the response.
+     */
     return c.json({ error }, 500);
 });
 app.notFound((c) => {
@@ -291,6 +333,73 @@ app.get("/recipes/:id", async (c) => {
 
     // Return the Recipe to the Client
     return c.json(recipe, 200);
+});
+
+app.put("/recipes/:id", async (c) => {
+    const isAuthenticated = c.get("isAuthenticated");
+    if (isAuthenticated === false) {
+        logger.warn({}, "Deny: User is not authenticated.");
+        return c.json({}, 401);
+    }
+    const userId = c.get("userId");
+
+    // Get Recipe ID from Path Parameter
+    let id: number;
+    try {
+        id = parseInt(c.req.param("id"));
+    } catch (e) {
+        logger.warn({}, "The provided ID is not a number.");
+        return c.json({}, 400);
+    }
+    logger.info({ id, userId }, "User requests to update Recipe.");
+
+    // Get the Recipe by ID from the Databse
+    const recipe = await (await dbService.getDatabaseManager())
+        .getRepository(Recipe)
+        .findOneBy({ id });
+
+    // Return 404 Not Found if there is no Recipe with the given ID in the Database.
+    if (recipe === null) {
+        logger.warn({ id }, "No Recipe for the ID found.");
+        return c.json({}, 404);
+    }
+
+    // Only the owner of the Recipe is allowed to update it, so we need to check the
+    // ownerUserId of the Recipe against the userId from the access token (sub).
+    if (recipe.ownerUserId !== userId) {
+        logger.warn(
+            { id, recipeOwner: recipe.ownerUserId, userId },
+            "Deny: User is not the owner of the Recipe.",
+        );
+        return c.json({}, 403);
+    }
+
+    // Update the Recipe with the data from the Request Body
+    const updatedRecipe = await c.req.json<Recipe>();
+    recipe.title = updatedRecipe.title;
+    recipe.description = updatedRecipe.description;
+    recipe.isPrivate = updatedRecipe.isPrivate;
+    recipe.ingredients = updatedRecipe.ingredients;
+    recipe.steps = updatedRecipe.steps;
+
+    // Save the updated Recipe in the Database
+    const savedRecipe = await (await dbService.getDatabaseManager())
+        .getRepository(Recipe)
+        .save(recipe);
+    logger.info({ id, userId }, "Updated Recipe.");
+
+    // Simulate a crash for even recipe IDs between 0 and 10 so that an DB Exception is thrown.
+    // Such an exception should not find a way to the client as it could contain sensitive information.
+    // See "app.onError()" error hook for details.
+    if (id >= 0 && id % 2 === 0 && id <= 10) {
+        logger.warn("Simulating Crash.");
+        await (await dbService.getDatabaseManager()).query(
+            "SELECT * FROM NON_EXISTING_TABLE",
+        );
+    }
+
+    // Return the updated Recipe to the Client
+    return c.json(savedRecipe, 200);
 });
 
 app.delete("/recipes/:id", async (c) => {
