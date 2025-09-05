@@ -161,10 +161,15 @@ export default function RecipesPage() {
                                                         auth.user?.profile
                                                             .sub ? (
                                                             <>
-                                                                <div className="mt-2 hidden">
+                                                                <div className="mt-2">
                                                                     <Button
                                                                         fullWidth
                                                                         color="warning"
+                                                                        onClick={() =>
+                                                                            routeTo(
+                                                                                `/recipes/${recipe.id}/edit`,
+                                                                            )
+                                                                        }
                                                                     >
                                                                         Edit
                                                                         Recipe{" "}
