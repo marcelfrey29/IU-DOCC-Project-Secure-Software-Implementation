@@ -27,6 +27,13 @@ export default function RecipesPage() {
         getRecipe();
     }, []);
 
+    const deleteRecipe = async (id: number) => {
+        await recipeService.deleteRecipe(id, {
+            accessToken: auth.user?.access_token,
+        });
+        await getRecipe();
+    };
+
     return (
         <DefaultLayout>
             <section className="mt-12″ mb-12">
@@ -164,10 +171,15 @@ export default function RecipesPage() {
                                                                         <BootstrapIcon name="pencil-fill" />
                                                                     </Button>
                                                                 </div>
-                                                                <div className="mt-2 hidden">
+                                                                <div className="mt-2">
                                                                     <Button
                                                                         fullWidth
                                                                         color="danger"
+                                                                        onPress={() =>
+                                                                            deleteRecipe(
+                                                                                recipe.id!,
+                                                                            )
+                                                                        }
                                                                     >
                                                                         Delete
                                                                         Recipe{" "}
