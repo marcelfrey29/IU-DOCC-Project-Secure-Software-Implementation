@@ -158,7 +158,7 @@ export default function RecipeEditor(params: {
                 <div>
                     <h1 className="text-3xl text-primary font-bold">
                         {params.type === "create"
-                            ? "Create Recipies"
+                            ? "Create Recipie"
                             : "Update Recipie"}
                     </h1>
                 </div>
