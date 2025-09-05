@@ -293,6 +293,55 @@ app.get("/recipes/:id", async (c) => {
     return c.json(recipe, 200);
 });
 
+app.delete("/recipes/:id", async (c) => {
+    const isAuthenticated = c.get("isAuthenticated");
+    if (isAuthenticated === false) {
+        logger.warn({}, "Deny: User is not authenticated.");
+        return c.json({}, 401);
+    }
+    const userId = c.get("userId");
+
+    // Get Recipe ID from Path Parameter
+    let id: number;
+    try {
+        id = parseInt(c.req.param("id"));
+    } catch (e) {
+        logger.warn({}, "The provided ID is not a number.");
+        return c.json({}, 400);
+    }
+    logger.info({ id, userId }, "User requests to delete Recipe.");
+
+    // Get the Recipe by ID from the Databse
+    const recipe = await (await dbService.getDatabaseManager())
+        .getRepository(Recipe)
+        .findOneBy({ id });
+
+    // Return 404 Not Found if there is no Recipe with the given ID in the Database.
+    if (recipe === null) {
+        logger.warn({ id }, "No Recipe for the ID found.");
+        return c.json({}, 404);
+    }
+
+    // Only the owner of the Recipe is allowed to delete it, so we need to check the
+    // ownerUserId of the Recipe against the userId from the access token (sub).
+    if (recipe.ownerUserId !== userId) {
+        logger.warn(
+            { id, recipeOwner: recipe.ownerUserId, userId },
+            "Deny: User is not the owner of the Recipe.",
+        );
+        return c.json({}, 403);
+    }
+
+    // Delete the Recipe
+    await (await dbService.getDatabaseManager())
+        .getRepository(Recipe)
+        .remove(recipe);
+    logger.info({ id, userId }, "Deleted Recipe.");
+
+    // Return success
+    return c.json({}, 200);
+});
+
 // Run Server
 serve(
     {
