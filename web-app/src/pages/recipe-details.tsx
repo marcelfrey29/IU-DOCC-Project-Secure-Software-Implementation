@@ -35,10 +35,20 @@ export default function RecipeDetailPage() {
         );
     };
 
+    const [comments, setComments] = useState([] as RecipeComment[]);
+    const getComments = async () => {
+        setComments(
+            await commentService.getCommentsForRecipe(parseInt(id ?? ""), {
+                accessToken: auth.user?.access_token,
+            }),
+        );
+    };
+
     const [newComment, setNewComment] = useState("");
 
     useEffect(() => {
         getRecipe();
+        getComments();
     }, []);
 
     const createComment = async () => {
@@ -48,6 +58,7 @@ export default function RecipeDetailPage() {
         await commentService.createRecipeComment(parseInt(id!), comment, {
             accessToken: auth.user?.access_token,
         });
+        getComments();
         setNewComment(""); // Clear Input Field
     };
 
@@ -183,6 +194,37 @@ export default function RecipeDetailPage() {
             <section>
                 <div>
                     <h3 className="text-xl mb-2">Comments</h3>
+                </div>
+
+                <div>
+                    {comments.length === 0 ? (
+                        <>
+                            <p className="text-sm">
+                                There are no comments yet. Be the first to add
+                                one.
+                            </p>
+                        </>
+                    ) : (
+                        <></>
+                    )}
+                </div>
+                <div>
+                    {comments.map((comment) => (
+                        <>
+                            <Card className="mb-2">
+                                <CardBody>
+                                    <div className="flex">
+                                        <div>
+                                            <p className="text-xs">
+                                                {comment.ownerUserId} said:{" "}
+                                            </p>
+                                            <p>{comment.comment}</p>
+                                        </div>
+                                    </div>
+                                </CardBody>
+                            </Card>
+                        </>
+                    ))}
                 </div>
 
                 <div className="mt-6 mb-8">
