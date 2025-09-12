@@ -1,0 +1,30 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+name: Kubernetes CI
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - kubernetes/**
+      - .github/workflows/kubernetes-ci.yml
+  pull_request:
+    branches: ["main"]
+    paths:
+      - kubernetes/**
+      - .github/workflows/kubernetes-ci.yml
+  workflow_dispatch: 
+  workflow_call:
+
+jobs:
+  kube-lint:
+    name: Kube-Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Run Kube-Lint
+        uses: stackrox/kube-linter-action@v1
+        with:
+          directory: kubernetes
