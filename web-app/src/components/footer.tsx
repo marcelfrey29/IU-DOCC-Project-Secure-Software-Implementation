@@ -15,12 +15,7 @@ export function Footer() {
                 {/* Center - About */}
                 <div className="text-center mt-4 md:mt-0">
                     <p>
-                        Built with{" "}
-                        <BootstrapIcon
-                            name="heart-fill"
-                            className="text-danger-400"
-                        />{" "}
-                        by Marcel
+                        Built with <BootstrapIcon name="heart-fill" className="text-danger-400" /> by Marcel
                     </p>
                     <p className="pt-2 text-default-400">Version {version}</p>
                     <p className="pt-2">
@@ -37,20 +32,12 @@ export function Footer() {
                 {/* Right */}
                 <div className="text-center md:text-end mt-4 md:mt-0">
                     <p>
-                        <Link
-                            href="/privacy"
-                            className="text-default-500"
-                            underline="hover"
-                        >
+                        <Link href="/privacy" className="text-default-500" underline="hover">
                             Privacy
                         </Link>
                     </p>
                     <p className="pt-2">
-                        <Link
-                            href="/imprint"
-                            className="text-default-500"
-                            underline="hover"
-                        >
+                        <Link href="/imprint" className="text-default-500" underline="hover">
                             Imprint
                         </Link>
                     </p>

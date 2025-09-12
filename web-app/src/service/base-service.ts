@@ -8,7 +8,7 @@ export class BaseAPIService {
     protected getHeaders(context: UserContext): Record<string, string> {
         const headers: Record<string, string> = {};
         if (context.accessToken) {
-            headers["authorization"] = `Bearer ${context.accessToken}`;
+            headers.authorization = `Bearer ${context.accessToken}`;
         }
         return headers;
     }

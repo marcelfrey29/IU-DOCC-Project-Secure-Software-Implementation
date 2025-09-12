@@ -5,9 +5,7 @@ export default function ImprintPage() {
         <DefaultLayout>
             <section className="mt-12″ mb-12">
                 <div>
-                    <h1 className="text-3xl text-primary font-bold">
-                        Impressum
-                    </h1>
+                    <h1 className="text-3xl text-primary font-bold">Impressum</h1>
                 </div>
             </section>
         </DefaultLayout>

@@ -1,5 +1,5 @@
 import "@/styles/globals.css";
-import { User } from "oidc-client-ts";
+import type { User } from "oidc-client-ts";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { AuthProvider } from "react-oidc-context";
@@ -13,12 +13,8 @@ const oidcConfig = {
     redirect_uri: window.location.origin,
     response_type: "code",
     scope: "openid profile email",
-    onSigninCallback: (_user: User | void): void => {
-        window.history.replaceState(
-            {},
-            document.title,
-            window.location.pathname,
-        );
+    onSigninCallback: (_user: User | undefined): void => {
+        window.history.replaceState({}, document.title, window.location.pathname);
     },
 };
 

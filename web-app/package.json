@@ -4,13 +4,19 @@
     "author": "Marcel Frey",
     "version": "1.0.0",
     "private": true,
-    "keywords": ["website", "react", "nextui"],
+    "keywords": [
+        "website",
+        "react",
+        "nextui"
+    ],
     "type": "module",
     "scripts": {
         "format": "biome format --write .",
         "format:verify": "biome format .",
         "lint": "biome lint --write .",
+        "lint-unsafe": "biome lint --unsafe --write .",
         "lint:verify": "biome lint .",
+        "typecheck": "tsc -noEmit",
         "dev": "vite --host --mode dev",
         "build": "tsc && vite build --mode dev",
         "build:prod": "tsc && vite build --mode prod",
@@ -53,7 +59,7 @@
         "tailwindcss": "^4.1.11"
     },
     "devDependencies": {
-        "@biomejs/biome": "^1.9.4",
+        "@biomejs/biome": "^2.2.4",
         "@tailwindcss/vite": "^4.1.11",
         "@types/react": "^19.0.2",
         "@types/react-dom": "^19.0.2",

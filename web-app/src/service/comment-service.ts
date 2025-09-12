@@ -1,4 +1,4 @@
-import { BaseAPIService, UserContext } from "./base-service";
+import { BaseAPIService, type UserContext } from "./base-service";
 
 export interface RecipeComment {
     id?: number;
@@ -8,17 +8,11 @@ export interface RecipeComment {
 }
 
 export class CommentService extends BaseAPIService {
-    async getCommentsForRecipe(
-        recipeId: number,
-        context: UserContext,
-    ): Promise<RecipeComment[]> {
-        const result = await fetch(
-            `${this.BASE_URL}/recipes/${recipeId}/comments`,
-            {
-                method: "GET",
-                headers: this.getHeaders(context),
-            },
-        );
+    async getCommentsForRecipe(recipeId: number, context: UserContext): Promise<RecipeComment[]> {
+        const result = await fetch(`${this.BASE_URL}/recipes/${recipeId}/comments`, {
+            method: "GET",
+            headers: this.getHeaders(context),
+        });
         if (result.status !== 200) {
             throw new Error("Error while getting all Comments.");
         }
@@ -26,19 +20,12 @@ export class CommentService extends BaseAPIService {
         return data;
     }
 
-    async createRecipeComment(
-        recipeId: number,
-        comment: RecipeComment,
-        context: UserContext,
-    ): Promise<RecipeComment> {
-        const result = await fetch(
-            `${this.BASE_URL}/recipes/${recipeId}/comments`,
-            {
-                method: "POST",
-                body: JSON.stringify(comment),
-                headers: this.getHeaders(context),
-            },
-        );
+    async createRecipeComment(recipeId: number, comment: RecipeComment, context: UserContext): Promise<RecipeComment> {
+        const result = await fetch(`${this.BASE_URL}/recipes/${recipeId}/comments`, {
+            method: "POST",
+            body: JSON.stringify(comment),
+            headers: this.getHeaders(context),
+        });
         if (result.status !== 201) {
             throw new Error("Error while creating Comment.");
         }
@@ -46,18 +33,11 @@ export class CommentService extends BaseAPIService {
         return data;
     }
 
-    async deleteRecipeComment(
-        recipeId: number,
-        id: number,
-        context: UserContext,
-    ): Promise<void> {
-        const result = await fetch(
-            `${this.BASE_URL}/recipes/${recipeId}/comments/${id}`,
-            {
-                method: "DELETE",
-                headers: this.getHeaders(context),
-            },
-        );
+    async deleteRecipeComment(recipeId: number, id: number, context: UserContext): Promise<void> {
+        const result = await fetch(`${this.BASE_URL}/recipes/${recipeId}/comments/${id}`, {
+            method: "DELETE",
+            headers: this.getHeaders(context),
+        });
         if (result.status !== 200) {
             throw new Error("Error while deleting Comment.");
         }

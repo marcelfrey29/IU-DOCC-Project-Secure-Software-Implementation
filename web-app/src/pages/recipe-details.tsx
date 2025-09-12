@@ -1,20 +1,13 @@
 import { BootstrapIcon } from "@/components/icons";
 import DefaultLayout from "@/layouts/default";
-import { CommentService, RecipeComment } from "@/service/comment-service";
-import { Recipe, RecipesService } from "@/service/recipe-service";
+import { CommentService, type RecipeComment } from "@/service/comment-service";
+import { type Recipe, RecipesService } from "@/service/recipe-service";
 import { Accordion, AccordionItem } from "@heroui/accordion";
 import { Button } from "@heroui/button";
 import { Card, CardBody } from "@heroui/card";
 import { Divider } from "@heroui/divider";
 import { Input } from "@heroui/input";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableColumn,
-    TableHeader,
-    TableRow,
-} from "@heroui/table";
+import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@heroui/table";
 import { useEffect, useState } from "react";
 import { useAuth } from "react-oidc-context";
 import { useParams } from "react-router-dom";
@@ -23,13 +16,13 @@ const recipeService = new RecipesService();
 const commentService = new CommentService();
 
 export default function RecipeDetailPage() {
-    let { id } = useParams();
+    const { id } = useParams();
     const auth = useAuth();
 
     const [recipe, setRecipe] = useState({} as Recipe);
     const getRecipe = async () => {
         setRecipe(
-            await recipeService.getRecipe(parseInt(id ?? ""), {
+            await recipeService.getRecipe(parseInt(id ?? "", 10), {
                 accessToken: auth.user?.access_token,
             }),
         );
@@ -38,7 +31,7 @@ export default function RecipeDetailPage() {
     const [comments, setComments] = useState([] as RecipeComment[]);
     const getComments = async () => {
         setComments(
-            await commentService.getCommentsForRecipe(parseInt(id ?? ""), {
+            await commentService.getCommentsForRecipe(parseInt(id ?? "", 10), {
                 accessToken: auth.user?.access_token,
             }),
         );
@@ -46,6 +39,7 @@ export default function RecipeDetailPage() {
 
     const [newComment, setNewComment] = useState("");
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: intentional
     useEffect(() => {
         getRecipe();
         getComments();
@@ -55,7 +49,7 @@ export default function RecipeDetailPage() {
         const comment: RecipeComment = {
             comment: newComment,
         };
-        await commentService.createRecipeComment(parseInt(id!), comment, {
+        await commentService.createRecipeComment(parseInt(id!, 10), comment, {
             accessToken: auth.user?.access_token,
         });
         getComments();
@@ -74,24 +68,15 @@ export default function RecipeDetailPage() {
             <section className="mt-12″ mb-12">
                 {/* Title and Details */}
                 <div>
-                    <h1 className="text-3xl text-primary font-bold">
-                        {recipe.title}
-                    </h1>
+                    <h1 className="text-3xl text-primary font-bold">{recipe.title}</h1>
                     <p className="text-sm">Recipe ID: #{id}</p>
                     <p className="text-sm">Created by {recipe.ownerUserId}</p>
 
-                    {recipe.isPrivate ? (
-                        <>
-                            <p className="mt-2">
-                                <BootstrapIcon
-                                    name="lock-fill"
-                                    className="mr-1 text-danger"
-                                />{" "}
-                                This Recipe is Private and only visible to you.
-                            </p>
-                        </>
-                    ) : (
-                        <></>
+                    {recipe.isPrivate && (
+                        <p className="mt-2">
+                            <BootstrapIcon name="lock-fill" className="mr-1 text-danger" /> This Recipe is Private and
+                            only visible to you.
+                        </p>
                     )}
 
                     {/*
@@ -135,7 +120,10 @@ export default function RecipeDetailPage() {
                      */}
                     <p
                         className="mt-2"
-                        dangerouslySetInnerHTML={{ __html: recipe.description }}
+                        // biome-ignore lint/security/noDangerouslySetInnerHtml: intentional for now
+                        dangerouslySetInnerHTML={{
+                            __html: recipe.description,
+                        }}
                     ></p>
                 </div>
 
@@ -150,11 +138,7 @@ export default function RecipeDetailPage() {
                                 { key: "unit", label: "Unit" },
                             ]}
                         >
-                            {(column) => (
-                                <TableColumn key={column.key}>
-                                    {column.label}
-                                </TableColumn>
-                            )}
+                            {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
                         </TableHeader>
                         <TableBody items={recipe.ingredients ?? []}>
                             {(item) => (
@@ -176,14 +160,12 @@ export default function RecipeDetailPage() {
                             <Accordion
                                 selectionMode="multiple"
                                 isCompact
-                                defaultExpandedKeys={recipe?.steps?.map(
-                                    (_, index) => index.toString(),
-                                )}
+                                defaultExpandedKeys={recipe?.steps?.map((_, index) => index.toString())}
                             >
                                 {recipe?.steps?.map((step, idx) => (
                                     <>
                                         <AccordionItem
-                                            key={idx}
+                                            key={step.description.replace(" ", "-")}
                                             title={`Step ${idx + 1}`}
                                         >
                                             {step.description}
@@ -204,15 +186,8 @@ export default function RecipeDetailPage() {
                 </div>
 
                 <div>
-                    {comments.length === 0 ? (
-                        <>
-                            <p className="text-sm">
-                                There are no comments yet. Be the first to add
-                                one.
-                            </p>
-                        </>
-                    ) : (
-                        <></>
+                    {comments.length === 0 && (
+                        <p className="text-sm">There are no comments yet. Be the first to add one.</p>
                     )}
                 </div>
                 <div>
@@ -222,27 +197,17 @@ export default function RecipeDetailPage() {
                                 <CardBody>
                                     <div className="flex">
                                         <div>
-                                            <p className="text-xs">
-                                                {comment.ownerUserId} said:{" "}
-                                            </p>
+                                            <p className="text-xs">{comment.ownerUserId} said: </p>
                                             <p>{comment.comment}</p>
                                         </div>
                                         <div className="ml-auto">
-                                            {comment.ownerUserId ===
-                                            auth.user?.profile.sub ? (
-                                                <>
-                                                    <Button
-                                                        color="danger"
-                                                        onPress={() =>
-                                                            deleteComment(
-                                                                recipe.id!,
-                                                                comment.id!,
-                                                            )
-                                                        }
-                                                    >
-                                                        <BootstrapIcon name="trash-fill" />
-                                                    </Button>
-                                                </>
+                                            {comment.ownerUserId === auth.user?.profile.sub ? (
+                                                <Button
+                                                    color="danger"
+                                                    onPress={() => deleteComment(recipe.id!, comment.id!)}
+                                                >
+                                                    <BootstrapIcon name="trash-fill" />
+                                                </Button>
                                             ) : (
                                                 <></>
                                             )}
@@ -265,10 +230,7 @@ export default function RecipeDetailPage() {
                             value={newComment}
                             onValueChange={setNewComment}
                         />
-                        <Button
-                            className="ml-auto h-auto"
-                            onClick={() => createComment()}
-                        >
+                        <Button className="ml-auto h-auto" onClick={() => createComment()}>
                             <BootstrapIcon name="chat-left-dots-fill" />
                             Add Comment
                         </Button>

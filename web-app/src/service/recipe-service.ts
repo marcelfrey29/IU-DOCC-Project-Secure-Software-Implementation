@@ -1,4 +1,4 @@
-import { BaseAPIService, UserContext } from "./base-service";
+import { BaseAPIService, type UserContext } from "./base-service";
 
 export interface Recipe {
     id?: number;
@@ -70,11 +70,7 @@ export class RecipesService extends BaseAPIService {
         return this.transformRecipe(data);
     }
 
-    async updateRecipe(
-        id: number,
-        recipe: Recipe,
-        context: UserContext,
-    ): Promise<Recipe> {
+    async updateRecipe(id: number, recipe: Recipe, context: UserContext): Promise<Recipe> {
         const result = await fetch(`${this.BASE_URL}/recipes/${id}`, {
             method: "PUT",
             body: JSON.stringify(this.transformRecipeEntity(recipe)),

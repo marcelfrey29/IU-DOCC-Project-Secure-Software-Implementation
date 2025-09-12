@@ -19,8 +19,7 @@ export default function IndexPage() {
         {
             icon: "file-lock2-fill",
             title: "Private Recipes",
-            description:
-                "Recipes just for you. Gradma's top secret apple pie recipe is just for you.",
+            description: "Recipes just for you. Gradma's top secret apple pie recipe is just for you.",
         },
     ].map((highlight) => {
         return <HighlightCard key={highlight.title} data={highlight} />;
@@ -34,24 +33,18 @@ export default function IndexPage() {
                         <div className="absolute inset-0 bg-background dark:bg-background -z-10 -ml-10 md:-ml-4 -mr-10 md:-mr-4 md:-mt-10 md:-mb-10" />
                         <p className="text-4xl md:text-5xl font-bold tracking-tight leading-10">
                             <span className="text-primary-500">
-                                <b className="tracking-tighter">
-                                    Social Recipe
-                                </b>
+                                <b className="tracking-tighter">Social Recipe</b>
                             </span>{" "}
                         </p>
 
                         <p className="text-3xl font-bold tracking-normal leading-10 mt-6">
                             With Social Recipe, you can{" "}
                             <span className="">
-                                <b className="tracking-tight">
-                                    create, share, and view
-                                </b>
+                                <b className="tracking-tight">create, share, and view</b>
                             </span>{" "}
                             recipes. Engage with others by{" "}
                             <span className="">
-                                <b className="tracking-tight">
-                                    voting and commenting
-                                </b>
+                                <b className="tracking-tight">voting and commenting</b>
                             </span>{" "}
                             their recipes.
                         </p>
@@ -66,9 +59,7 @@ export default function IndexPage() {
 
             <section className="flex flex-col gap-4 pt-12 pb-16 relative">
                 <div className="absolute inset-0 bg-background dark:bg-background z-10 pb-16 -ml-10 md:-ml-4 -mr-10 md:-mr-4" />
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 z-10">
-                    {highlightCards}
-                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 z-10">{highlightCards}</div>
             </section>
         </DefaultLayout>
     );
