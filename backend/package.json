@@ -4,13 +4,19 @@
     "author": "Marcel Frey",
     "version": "1.0.0",
     "private": true,
-    "keywords": ["backend", "nodejs", "hono"],
+    "keywords": [
+        "backend",
+        "nodejs",
+        "hono"
+    ],
     "type": "module",
     "scripts": {
         "format": "biome format --write .",
         "format:verify": "biome format .",
         "lint": "biome lint --write .",
+        "lint-unsafe": "biome lint --unsafe --write .",
         "lint:verify": "biome lint .",
+        "typecheck": "tsc -noEmit",
         "dev": "tsx watch src/index.ts",
         "build": "tsc",
         "start": "node dist/index.js"
@@ -25,7 +31,7 @@
         "typeorm": "0.3.26"
     },
     "devDependencies": {
-        "@biomejs/biome": "^1.9.4",
+        "@biomejs/biome": "^2.2.4",
         "@types/node": "^20.11.17",
         "tsx": "^4.7.1",
         "typescript": "^5.8.3"

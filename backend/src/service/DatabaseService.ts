@@ -1,5 +1,5 @@
 import type { Logger } from "pino";
-import { DataSource } from "typeorm";
+import type { DataSource } from "typeorm";
 import { DatabaseDataSource } from "../config/database.js";
 import type { ConfigService } from "./ConfigService.js";
 
@@ -7,7 +7,7 @@ export class DatabaseService {
     private databaseDataSource: DataSource | undefined = undefined;
     constructor(
         private readonly logger: Logger,
-        private readonly configService: ConfigService,
+        readonly _configService: ConfigService,
     ) {}
 
     async getDatabaseManager() {

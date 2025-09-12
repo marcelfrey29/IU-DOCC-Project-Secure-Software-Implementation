@@ -2,12 +2,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class RecipeComment {
-    constructor(
-        id: number,
-        recipeId: number,
-        ownerUserId: string,
-        comment: string,
-    ) {
+    constructor(id: number, recipeId: number, ownerUserId: string, comment: string) {
         this.id = id;
         this.recipeId = recipeId;
         this.ownerUserId = ownerUserId;

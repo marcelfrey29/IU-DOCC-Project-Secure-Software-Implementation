@@ -1,0 +1,12 @@
+{
+    "biome.lsp.bin": "../backend/node_modules//@biomejs/cli-darwin-arm64/biome",
+    "[typescript]": {
+        "editor.defaultFormatter": "biomejs.biome"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "biomejs.biome"
+    },
+    "[terraform]": {
+        "editor.defaultFormatter": "hashicorp.terraform"
+    }
+}
