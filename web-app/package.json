@@ -17,6 +17,7 @@
         "lint-unsafe": "biome lint --unsafe --write .",
         "lint:verify": "biome lint .",
         "typecheck": "tsc -noEmit",
+        "test:unit": "vitest run",
         "dev": "vite --host --mode dev",
         "build": "tsc && vite build --mode dev",
         "build:prod": "tsc && vite build --mode prod",
@@ -68,6 +69,7 @@
         "postcss": "^8.4.49",
         "typescript": "^5.7.2",
         "vite": "^6.0.5",
-        "vite-tsconfig-paths": "^5.1.4"
+        "vite-tsconfig-paths": "^5.1.4",
+        "vitest": "^3.2.4"
     }
 }
