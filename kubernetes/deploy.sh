@@ -52,7 +52,7 @@ echo "Deployed Backend Auth Service Proxy."
 # Social Recipe Service (Backend)
 echo "Deploying Backend Service..."
 (cd ../backend; docker build . -t ghcr.io/marcelfrey29/iu-docc-secure-software-development-backend:latest)
-kubectl apply -f backend.deployment.yaml -n social-recipe
+envsubst < backend.deployment.yaml | kubectl apply -f - -n social-recipe
 kubectl rollout restart deployment backend -n social-recipe
 kubectl apply -f backend.ingress.yaml -n social-recipe
 kubectl apply -f backend.service.yaml -n social-recipe

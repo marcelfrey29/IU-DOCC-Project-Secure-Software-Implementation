@@ -50,6 +50,15 @@ The PostgreSQL Database is running in Kubernetes and is not publicly available.
 For local development (e.g. when running `npm run dev` in the `backend/` directory), the K8s service needs to be forwarded to `localhost:5432`.
 
 ```bash
+# Backend
+cd backend
+DB_USERNAME="social-recipie-db-rw-user" DB_PASSWORD="<pw>" npm run dev
+
+# Web App
+cd web-app
+npm run dev
+
+# Make PostgreSQL available
 kubectl port-forward -n social-recipe svc/postgres 5432:5432 
 ```
 

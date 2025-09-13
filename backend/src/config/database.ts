@@ -6,7 +6,7 @@ export const DatabaseDataSource = new DataSource({
     type: "postgres",
     host: process.env.DB_URL ?? "localhost", // Read the DB URL from Environment (required for K8s) and fallback to localhost (local development)
     port: 5432,
-    username: "social-recipie-db-rw-user",
+    username: process.env.DB_USERNAME,
     /**
      * BUG: https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/issues/15
      *
@@ -32,11 +32,22 @@ export const DatabaseDataSource = new DataSource({
      * https://cwe.mitre.org/data/definitions/259.html (CWE-259)
      * https://cwe.mitre.org/data/definitions/798.html (CWE-798)
      *
-     * # Remetiation
+     * # Remediation
      *
      * Use environment variables and pass the username and password to the application.
+     *
+     * # Fix
+     *
+     * Both the username and password for the database must be securely injected via environment variable. To do this, several changes
+     * are required:
+     * - Two new environment variables must be defined: "DB_USERNAME" and "DB_PASSWORD"
+     * - Here, in the `database.ts` file, the static data must be removed and the environment variables must be read
+     * - The Kubernetes Manifest must be updated so that the environment variables are injected into the container, see the
+     *   `backend.deployment.yaml file. The value for the environment variable must itself be read from an environment variable.
+     * - The `deploy.sh` file must be updated to include the password in the K8s manifest because - obviously - we can't store it there.
+     * - When running the backend locally, we must provide the environment variables: `DB_USERNAME="<username>" DB_PASSWORD="<password>" npm run dev`
      */
-    password: "ZuVUQfMg7i3vLEcZN5YqjswoXX++en9lZwG2DK6sYqHqZnMr",
+    password: process.env.DB_PASSWORD,
     database: "socialrecipe",
     synchronize: true,
     logging: false,
