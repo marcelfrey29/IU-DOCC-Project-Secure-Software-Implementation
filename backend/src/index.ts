@@ -73,8 +73,22 @@ app.onError((error, c) => {
      * error to the client.
      * While this middleware itself is present, the error is not allowed to be returned and therefore must
      * be removed from the response.
+     *
+     * # Fix
+     *
+     * A global error handling middlware must be in place that catches all errors and retruns a defined error
+     * response without including the raw error itself. We therefore no longer return the `error` as body.
+     * Instead we only return the generic "Internal Server Error" message along the requestId which identified
+     * the unique request. Users can include this ID in support tickets which enables Engineers to quickly find
+     * the related logs.
      */
-    return c.json({ error }, 500);
+    return c.json(
+        {
+            message: "Internal Server Error",
+            requestId: c.get("requestId"),
+        },
+        500,
+    );
 });
 app.notFound((c) => {
     logger.warn({}, "Not Found.");
