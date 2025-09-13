@@ -67,7 +67,7 @@
         "@vitejs/plugin-react": "^4.3.4",
         "autoprefixer": "^10.4.20",
         "postcss": "^8.4.49",
-        "typescript": "^5.7.2",
+        "typescript": "^5.9.2",
         "vite": "^6.3.6",
         "vite-tsconfig-paths": "^5.1.4",
         "vitest": "^3.2.4"
