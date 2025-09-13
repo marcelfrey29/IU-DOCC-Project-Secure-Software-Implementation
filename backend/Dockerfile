@@ -28,7 +28,7 @@
 # Release should be used. Make sure there are no known vulnerabilities in the used image and ensure it comes from a 
 # trusted source. 
 
-FROM node:18-alpine AS base
+FROM node:24-alpine AS base
 
 FROM base AS builder
 
