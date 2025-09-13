@@ -55,7 +55,7 @@
         "react": "^19.1.1",
         "react-dom": "^19.1.1",
         "react-oidc-context": "^3.3.0",
-        "react-router-dom": "^7.1.0",
+        "react-router-dom": "^7.9.1",
         "tailwind-variants": "^2.1.0",
         "tailwindcss": "^4.1.11"
     },
