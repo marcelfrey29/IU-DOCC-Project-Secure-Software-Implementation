@@ -199,7 +199,7 @@ app.post("/recipes", async (c) => {
 
 app.get("/recipes", async (c) => {
     const userId = c.get("userId");
-
+    const isAuthenticated = c.get("isAuthenticated");
     /**
      * BUG: https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/issues/22
      *
@@ -236,10 +236,25 @@ app.get("/recipes", async (c) => {
      *
      * Remove the affected element from the log contect and only log context-relevant non-personal data
      * like the userId (`sub`) or authentication state (`isAuthenticated`).
+     *
+     * # Fix
+     *
+     * Instead of logging the raw `Authorization` header, we only log the values derived from the token, like
+     * the ID of the user and its authentication state.
+     *
+     * Bearer CLI (SAST for Code) reports all additional logging information with severity LOW. For this reason,
+     * the rule was disabled because we want to make use of structured logging, see `bearer.yml` in the project
+     * root for more details. Without disabling the logger rule, Bearer CLI informs us about the logger leak
+     * which is classified as CWE-532 (as we already defined above):
+     * ```
+     * LOW: Leakage of information in logger message [CWE-532]
+     * https://docs.bearer.com/reference/rules/javascript_lang_logger_leak
+     * ```
      */
     logger.info(
         {
-            user: c.req.header("Authorization"),
+            isAuthenticated,
+            userId,
         },
         "User requested all Recipes.",
     );
