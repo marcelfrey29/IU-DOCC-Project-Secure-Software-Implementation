@@ -3,10 +3,21 @@
 > [!CAUTION] 
 > **For educational purposes, this version of the application and infrastructure definition contains common vulnerabilities and flaws!**
 
+[![Backend CI (Node.js)](https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/actions/workflows/backend-ci.yml)
+[![Web App CI (Node.js)](https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/actions/workflows/web-app-ci.yml/badge.svg)](https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/actions/workflows/web-app-ci.yml)
+[![Kubernetes CI](https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/actions/workflows/kubernetes-ci.yaml/badge.svg)](https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/actions/workflows/kubernetes-ci.yaml)
+[![Terraform CI](https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/actions/workflows/terraform-ci.yml/badge.svg)](https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/actions/workflows/terraform-ci.yml)
+
 ## Prerequisites
 
-- A Kubernetes Cluster (e.g. via Docker Desktop)
+- A [Kubernetes](https://kubernetes.io/) Cluster (e.g. via Docker Desktop)
 - [Helm](https://helm.sh/) 
+- [Terraform](https://developer.hashicorp.com/terraform)
+- [Node.js 22 (LTS)](https://nodejs.org/)
+- (Optional) [AWS Toolkit for VS Code (for the AWS Threat Composer)](https://marketplace.visualstudio.com/items?itemName=AmazonWebServices.aws-toolkit-vscode)
+- [Bearer CLI (SAST)](https://docs.bearer.com/)
+- [Trivy (SAST)](https://trivy.dev/latest/)
+- [Kube Linter](https://docs.kubelinter.io/#/)
 
 ## Deployment
 
@@ -74,4 +85,24 @@ kubectl exec postgres-0 -n social-recipe -it -- /bin/bash
 
 # Run PSQL
 psql --username=social-recipie-db-rw-user socialrecipe
+```
+
+#### Security Testing
+
+```bash
+# SAST - Backend
+bearer scan --fail-on-severity medium --scanner secrets,sast backend
+trivy image --scanners vuln,secret,misconfig --pkg-types os,library --severity CRITICAL,HIGH ghcr.io/marcelfrey29/iu-docc-secure-software-development-backend:latest
+trivy fs --scanners vuln,secret,misconfig --severity CRITICAL,HIGH backend
+
+# SAST - Web App
+bearer scan --fail-on-severity medium --scanner secrets,sast web-app
+trivy image --scanners vuln,secret,misconfig --pkg-types os,library --severity CRITICAL,HIGH ghcr.io/marcelfrey29/iu-docc-secure-software-development-web-app:latest
+trivy fs --scanners vuln,secret,misconfig --severity CRITICAL,HIGH web-app
+
+# SAST - Kubernetes
+trivy fs --scanners vuln,secret,misconfig --severity CRITICAL,HIGH kubernetes
+
+# SAST - Terraform
+trivy fs --scanners vuln,secret,misconfig --severity CRITICAL,HIGH terraform
 ```

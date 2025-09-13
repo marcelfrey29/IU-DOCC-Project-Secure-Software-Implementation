@@ -28,3 +28,23 @@ jobs:
         uses: stackrox/kube-linter-action@v1
         with:
           directory: kubernetes
+
+  sast:
+    name: SAST
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./kubernetes
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4   
+      - name: Run Trivy
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: 'fs'
+          scan-ref: 'kubernetes'
+          scanners: 'vuln,secret,misconfig'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
+          format: 'table'
+          trivyignores: '.trivyignore'
