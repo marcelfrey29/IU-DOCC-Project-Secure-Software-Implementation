@@ -1,0 +1,96 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for all configuration options:
+# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/.github"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
+    labels:
+      - "area: dependencies"
+      - "area: ci"
+
+  - package-ecosystem: "docker"
+    directories:
+      - "./backend"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
+    labels:
+      - "area: dependencies"
+      - "area: docker"
+      - "area: backend"
+
+  - package-ecosystem: "docker"
+    directories:
+      - "./web-app"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
+    labels:
+      - "area: dependencies"
+      - "area: docker"
+      - "area: web-app"
+
+  - package-ecosystem: "npm"
+    directory: "./web-app"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
+    labels:
+      - "area: dependencies"
+      - "area: web-app"
+
+  - package-ecosystem: "npm"
+    directory: "./backend"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
+    labels:
+      - "area: dependencies"
+      - "area: backend"
+
+  - package-ecosystem: "docker"
+    directories:
+      - "./kubernetes"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
+    labels:
+      - "area: dependencies"
+      - "area: docker"
+      - "area: k8s"
+      
+  - package-ecosystem: "terraform"
+    directory: "./terraform"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
+    labels:
+      - "area: dependencies"
+      - "area: iac"
