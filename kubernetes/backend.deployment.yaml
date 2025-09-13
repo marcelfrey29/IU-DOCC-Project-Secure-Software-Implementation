@@ -20,6 +20,10 @@ spec:
           env:
             - name: DB_URL
               value: postgres # Name of Postgres Service in K8s (static network endpoint)
+            - name: DB_USERNAME
+              value: "social-recipie-db-rw-user"
+            - name: DB_PASSWORD
+              value: ${SOCIAL_RECIPE_DB_PASSWORD}
             - name: AUTH_SERVICE_URL
               value: "http://authentik-proxy" # Name of the Authentik Service Proxy in K8s (static network endpoint)
           resources:
