@@ -34,9 +34,10 @@ export default function RecipeEditor(params: { type: "create" | "update" }) {
             setSteps(recipe.steps);
         };
         // biome-ignore  lint/correctness/useHookAtTopLevel: intentional
+        // biome-ignore lint/correctness/useExhaustiveDependencies: intentional
         useEffect(() => {
             getRecipe();
-        });
+        }, []);
     }
 
     const ingredientsView = ingredients.map((i) => {
