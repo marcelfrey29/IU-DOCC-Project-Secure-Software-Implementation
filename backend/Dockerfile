@@ -27,6 +27,18 @@
 # Update the base image so that a current and maintained Node.js version is used. Ideally, a Long Term Support (LTS) 
 # Release should be used. Make sure there are no known vulnerabilities in the used image and ensure it comes from a 
 # trusted source. 
+#
+# # Fix
+# 
+# This issue has been solved automatically by enabling Dependabot which keeps all depdencies up-to-date.
+# After its activation, Dependabot opened a Pull Request which updated the old `node:18-alpine` image to `node:24-alpine`
+# which is the current active Node.js version which will get LTS support until the end of April 2028.
+# PR: https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/pull/42
+#
+# Without Dependabot, a manual update would be necessary, which would include the same changes.
+# 
+# In general it's a good idea to keep track of the major third-party components because an major update can also come
+# with additional development work in case there are breaking changes. 
 
 FROM node:24-alpine AS base
 
