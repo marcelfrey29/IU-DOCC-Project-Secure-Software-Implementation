@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend
+  annotations:
+    ignore-check.kube-linter.io/latest-tag: "We accept the latest image for this project"
 spec:
   selector:
     matchLabels:
@@ -27,6 +29,11 @@ spec:
             limits:
               memory: "128Mi"
               cpu: "512m"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
           ports:
             - containerPort: 3000
               name: backend-port

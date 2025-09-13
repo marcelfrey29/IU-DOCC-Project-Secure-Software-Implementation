@@ -2,6 +2,9 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres
+  annotations:
+    ignore-check.kube-linter.io/no-read-only-root-fs: "Prevent PostgreSQL crash loop"
+    ignore-check.kube-linter.io/run-as-non-root: "Prevent PostgreSQL crash loop"
 spec:
   selector:
     matchLabels:
@@ -16,6 +19,13 @@ spec:
       containers:
         - name: postgres
           image: postgres:17.6
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "512m"
+            limits:
+              memory: "1024Mi"
+              cpu: "1024m"
           ports:
             - containerPort: 5432
               name: postgres

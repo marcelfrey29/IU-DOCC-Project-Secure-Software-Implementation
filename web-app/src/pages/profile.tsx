@@ -3,14 +3,7 @@ import DefaultLayout from "@/layouts/default";
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
 import { Divider } from "@heroui/divider";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableColumn,
-    TableHeader,
-    TableRow,
-} from "@heroui/table";
+import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@heroui/table";
 import { useAuth } from "react-oidc-context";
 
 export default function ProfilePage() {
@@ -20,11 +13,7 @@ export default function ProfilePage() {
             <section className="mt-12″ mb-12">
                 <div>
                     <h1 className="text-3xl text-primary font-bold">
-                        Hello,{" "}
-                        <span className="tracking-tighter">
-                            {auth.user?.profile.name}
-                        </span>{" "}
-                        !
+                        Hello, <span className="tracking-tighter">{auth.user?.profile.name}</span> !
                     </h1>
                 </div>
                 <Divider className="my-5" />
@@ -39,9 +28,7 @@ export default function ProfilePage() {
                             <TableRow key="1">
                                 <TableCell>Username</TableCell>
                                 <TableCell>
-                                    <span>
-                                        @{auth.user?.profile.preferred_username}
-                                    </span>
+                                    <span>@{auth.user?.profile.preferred_username}</span>
                                 </TableCell>
                             </TableRow>
                             <TableRow key="1">
@@ -64,10 +51,7 @@ export default function ProfilePage() {
                 <Divider className="my-5" />
                 <div>
                     <h2 className="text-xl font-bold mb-2">Sign-out</h2>
-                    <Button
-                        color="danger"
-                        onClick={() => void auth.removeUser()}
-                    >
+                    <Button color="danger" onClick={() => void auth.removeUser()}>
                         <BootstrapIcon name="person-fill-x" /> Log out
                     </Button>
                 </div>

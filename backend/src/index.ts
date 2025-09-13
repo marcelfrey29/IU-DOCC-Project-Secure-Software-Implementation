@@ -17,12 +17,8 @@ import { DatabaseService } from "./service/DatabaseService.js";
 const logger = pino();
 logger.info({}, "Starting Server...");
 const configService = new ConfigService(logger);
-const dbService = new DatabaseService(logger, configService);
-const JWKS = jose.createRemoteJWKSet(
-    new URL(
-        `${configService.getAuthServiceUrl()}/application/o/social-recipe/jwks/`,
-    ),
-);
+export const dbService = new DatabaseService(logger, configService);
+const JWKS = jose.createRemoteJWKSet(new URL(`${configService.getAuthServiceUrl()}/application/o/social-recipe/jwks/`));
 
 // Setup Hono Server
 declare module "hono" {
@@ -32,7 +28,7 @@ declare module "hono" {
         userId: string;
     }
 }
-const app = new Hono();
+export const app = new Hono();
 // Hono Error Hooks
 app.onError((error, c) => {
     logger.error({ error }, "Internal Server Error.");
@@ -88,20 +84,16 @@ app.notFound((c) => {
 app.use("*", requestId({ headerName: "x-request-id" }));
 app.use("*", cors({ origin: "*" }));
 app.use("*", async (c, next) => {
-    const token: string | undefined = c.req.header()["authorization"];
+    const token: string | undefined = c.req.header().authorization;
     if (!token) {
         logger.info({}, "No Token: Anonymous user.");
         c.set("isAuthenticated", false);
     } else {
         try {
-            const { payload } = await jose.jwtVerify(
-                token.replace("Bearer ", ""),
-                JWKS,
-                {
-                    issuer: "http://auth-service.localhost/application/o/social-recipe/",
-                    audience: "social-recipe",
-                },
-            );
+            const { payload } = await jose.jwtVerify(token.replace("Bearer ", ""), JWKS, {
+                issuer: "http://auth-service.localhost/application/o/social-recipe/",
+                audience: "social-recipe",
+            });
             logger.info({ payload }, "JWT Token is valid.");
             const userId = payload.sub;
             if (!userId) {
@@ -199,9 +191,7 @@ app.post("/recipes", async (c) => {
      *
      * Validate and sanitize the user input before persisting it in the database.
      */
-    const storedRecipe = await (await dbService.getDatabaseManager())
-        .getRepository(Recipe)
-        .save(recipe);
+    const storedRecipe = await (await dbService.getDatabaseManager()).getRepository(Recipe).save(recipe);
 
     logger.info({}, "Persisted Recipe in Database.");
     return c.json(storedRecipe, 201);
@@ -260,10 +250,9 @@ app.get("/recipes", async (c) => {
     const recipes = await (await dbService.getDatabaseManager())
         .getRepository(Recipe)
         .createQueryBuilder("recipe")
-        .where(
-            "recipe.ownerUserId = :ownerUserId OR recipe.isPrivate = false",
-            { ownerUserId: userId },
-        )
+        .where("recipe.ownerUserId = :ownerUserId OR recipe.isPrivate = false", {
+            ownerUserId: userId,
+        })
         .getMany();
     logger.info({ count: recipes.length }, "Got Recipes for User.");
 
@@ -274,16 +263,14 @@ app.get("/recipes/:id", async (c) => {
     // Get Recipe ID from Path Parameter
     let id: number;
     try {
-        id = parseInt(c.req.param("id"));
-    } catch (e) {
+        id = Number.parseInt(c.req.param("id"), 10);
+    } catch (_e) {
         logger.warn({}, "The provided ID is not a number.");
         return c.json({}, 400);
     }
 
     // Get the Recipe by ID from the Databse
-    const recipe = await (await dbService.getDatabaseManager())
-        .getRepository(Recipe)
-        .findOneBy({ id });
+    const recipe = await (await dbService.getDatabaseManager()).getRepository(Recipe).findOneBy({ id });
 
     // Return 404 Not Found if there is no Recipe with the given ID in the Database.
     if (recipe === null) {
@@ -347,17 +334,15 @@ app.put("/recipes/:id", async (c) => {
     // Get Recipe ID from Path Parameter
     let id: number;
     try {
-        id = parseInt(c.req.param("id"));
-    } catch (e) {
+        id = Number.parseInt(c.req.param("id"), 10);
+    } catch (_e) {
         logger.warn({}, "The provided ID is not a number.");
         return c.json({}, 400);
     }
     logger.info({ id, userId }, "User requests to update Recipe.");
 
     // Get the Recipe by ID from the Databse
-    const recipe = await (await dbService.getDatabaseManager())
-        .getRepository(Recipe)
-        .findOneBy({ id });
+    const recipe = await (await dbService.getDatabaseManager()).getRepository(Recipe).findOneBy({ id });
 
     // Return 404 Not Found if there is no Recipe with the given ID in the Database.
     if (recipe === null) {
@@ -368,10 +353,7 @@ app.put("/recipes/:id", async (c) => {
     // Only the owner of the Recipe is allowed to update it, so we need to check the
     // ownerUserId of the Recipe against the userId from the access token (sub).
     if (recipe.ownerUserId !== userId) {
-        logger.warn(
-            { id, recipeOwner: recipe.ownerUserId, userId },
-            "Deny: User is not the owner of the Recipe.",
-        );
+        logger.warn({ id, recipeOwner: recipe.ownerUserId, userId }, "Deny: User is not the owner of the Recipe.");
         return c.json({}, 403);
     }
 
@@ -384,9 +366,7 @@ app.put("/recipes/:id", async (c) => {
     recipe.steps = updatedRecipe.steps;
 
     // Save the updated Recipe in the Database
-    const savedRecipe = await (await dbService.getDatabaseManager())
-        .getRepository(Recipe)
-        .save(recipe);
+    const savedRecipe = await (await dbService.getDatabaseManager()).getRepository(Recipe).save(recipe);
     logger.info({ id, userId }, "Updated Recipe.");
 
     // Simulate a crash for even recipe IDs between 0 and 10 so that an DB Exception is thrown.
@@ -394,9 +374,7 @@ app.put("/recipes/:id", async (c) => {
     // See "app.onError()" error hook for details.
     if (id >= 0 && id % 2 === 0 && id <= 10) {
         logger.warn("Simulating Crash.");
-        await (await dbService.getDatabaseManager()).query(
-            "SELECT * FROM NON_EXISTING_TABLE",
-        );
+        await (await dbService.getDatabaseManager()).query("SELECT * FROM NON_EXISTING_TABLE");
     }
 
     // Return the updated Recipe to the Client
@@ -414,17 +392,15 @@ app.delete("/recipes/:id", async (c) => {
     // Get Recipe ID from Path Parameter
     let id: number;
     try {
-        id = parseInt(c.req.param("id"));
-    } catch (e) {
+        id = Number.parseInt(c.req.param("id"), 10);
+    } catch (_e) {
         logger.warn({}, "The provided ID is not a number.");
         return c.json({}, 400);
     }
     logger.info({ id, userId }, "User requests to delete Recipe.");
 
     // Get the Recipe by ID from the Databse
-    const recipe = await (await dbService.getDatabaseManager())
-        .getRepository(Recipe)
-        .findOneBy({ id });
+    const recipe = await (await dbService.getDatabaseManager()).getRepository(Recipe).findOneBy({ id });
 
     // Return 404 Not Found if there is no Recipe with the given ID in the Database.
     if (recipe === null) {
@@ -435,17 +411,12 @@ app.delete("/recipes/:id", async (c) => {
     // Only the owner of the Recipe is allowed to delete it, so we need to check the
     // ownerUserId of the Recipe against the userId from the access token (sub).
     if (recipe.ownerUserId !== userId) {
-        logger.warn(
-            { id, recipeOwner: recipe.ownerUserId, userId },
-            "Deny: User is not the owner of the Recipe.",
-        );
+        logger.warn({ id, recipeOwner: recipe.ownerUserId, userId }, "Deny: User is not the owner of the Recipe.");
         return c.json({}, 403);
     }
 
     // Delete the Recipe
-    await (await dbService.getDatabaseManager())
-        .getRepository(Recipe)
-        .remove(recipe);
+    await (await dbService.getDatabaseManager()).getRepository(Recipe).remove(recipe);
     logger.info({ id, userId }, "Deleted Recipe.");
 
     // Return success
@@ -462,12 +433,10 @@ app.post("/recipes/:recipeId/comments", async (c) => {
     const recipeId = c.req.param("recipeId");
     const comment = await c.req.json<RecipeComment>();
     logger.info({ userId, recipeId }, "Creating new Recipe Comment for User.");
-    comment.recipeId = parseInt(recipeId);
+    comment.recipeId = Number.parseInt(recipeId, 10);
     comment.ownerUserId = userId;
 
-    const storedComment = await (await dbService.getDatabaseManager())
-        .getRepository(RecipeComment)
-        .save(comment);
+    const storedComment = await (await dbService.getDatabaseManager()).getRepository(RecipeComment).save(comment);
 
     logger.info({}, "Persisted Recipe Comment in Database.");
     return c.json(storedComment, 201);
@@ -523,10 +492,7 @@ app.get("/recipes/:recipeId/comments", async (c) => {
         .where(`comment.recipeId = ${recipeId}`, {})
         .getMany();
 
-    logger.info(
-        { recipeId, count: recipeComments.length },
-        "Got all comments for the Recipe.",
-    );
+    logger.info({ recipeId, count: recipeComments.length }, "Got all comments for the Recipe.");
     return c.json(recipeComments, 200);
 });
 
@@ -537,29 +503,23 @@ app.delete("/recipes/:recipeId/comments/:commentId", async (c) => {
     const userId = c.get("userId");
     const recipeId = c.req.param("recipeId");
     const commentId = c.req.param("commentId");
-    logger.info(
-        { userId, recipeId, commentId },
-        "User wants to delete a comment.",
-    );
+    logger.info({ userId, recipeId, commentId }, "User wants to delete a comment.");
 
     const comment = await (await dbService.getDatabaseManager())
         .getRepository(RecipeComment)
-        .findOneBy({ id: parseInt(commentId) });
+        .findOneBy({ id: Number.parseInt(commentId, 10) });
     if (!comment) {
         logger.warn({ commentId }, "There is no comment with the given ID.");
         return c.json({}, 404);
     }
     if (comment.ownerUserId !== userId) {
-        logger.warn(
-            { userId, commentId },
-            "Deny: The requesting user is not the owener of the comment.",
-        );
+        logger.warn({ userId, commentId }, "Deny: The requesting user is not the owener of the comment.");
         return c.json({}, 403);
     }
 
     await (await dbService.getDatabaseManager())
         .getRepository(RecipeComment)
-        .delete({ id: parseInt(commentId) });
+        .delete({ id: Number.parseInt(commentId, 10) });
 
     logger.info({ commentId, userId }, "Deleted comment.");
     return c.json({}, 200);

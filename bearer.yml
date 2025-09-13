@@ -1,0 +1,15 @@
+scan:
+  scanner:
+    - sast
+    - secrets
+rule:
+  # Bearer raises LOW errors for all logger messages that contain additional data.
+  # As we need structured logging to log enough context we disable this rule. Finding the right
+  # balance here is challenging: On the one hand, we don't want to log any user-specific
+  # information to protect the privacy, on the other hand we must log certain details so that
+  # security monitoring and attack detection is possible.
+  # We disable the rule because we can't add an exception for every log line. However, this
+  # also means that we miss log messages that really log sensitive data, like our flaw where
+  # user tokens get logged (see
+  # https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/issues/22).
+  skip-rule: [javascript_lang_logger_leak]

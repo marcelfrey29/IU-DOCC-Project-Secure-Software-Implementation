@@ -1,0 +1,96 @@
+name: Backend CI (Node.js)
+
+on:
+  push:
+    branches: ["main"]
+    paths: 
+      - backend/**
+      - .github/workflows/backend-ci.yml         
+  pull_request:
+    branches: ["main"]
+    paths:
+      - backend/**
+      - .github/workflows/backend-ci.yml
+  workflow_dispatch: 
+  workflow_call:
+
+jobs:
+  continuous-integration:
+    name: Continuous Integration
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: Install Dependencies
+        run: npm ci
+      - name: Check Formatting
+        run: npm run format:verify
+      - name: TypeScript Typecheck
+        run: npm run typecheck
+      - name: Run Linter
+        run: npm run lint:verify
+      - name: Unit Tests
+        run: npm run test:unit
+      - name: Build
+        run: npm run build
+
+  build-container-image:
+    name: Build Container Image
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Build an image from Dockerfile
+        run: docker build -t ghcr.io/marcelfrey29/iu-docc-secure-software-development-backend:latest .
+      - name: Run Trivy Vulnerability Scanner
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: 'ghcr.io/marcelfrey29/iu-docc-secure-software-development-backend:latest'
+          scanners: 'vuln,secret,misconfig'
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
+          format: 'table'
+          trivyignores: '.trivyignore'
+
+  sast-code:
+    name: SAST (Code)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: SAST
+        uses: bearer/bearer-action@v2
+        with:
+          path: 'backend'
+          config-file: './bearer.yml'
+
+  sast:
+    name: SAST
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4   
+      - name: Run Trivy
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: 'fs'
+          scan-ref: 'backend'
+          scanners: 'vuln,secret,misconfig'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
+          format: 'table'
+          trivyignores: '.trivyignore'
