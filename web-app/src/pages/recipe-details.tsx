@@ -117,14 +117,14 @@ export default function RecipeDetailPage() {
                      * Don't modify the DOM directly and use the React Template Engine instead.
                      * React Templates do sanitize the input by default, so to display text a standard
                      * template element should be used.
+                     *
+                     * # Fix
+                     *
+                     * Sanitize all incoming data. Reacts buil-in templace engine (JSX) already sanitizes data, so we
+                     * can simply use `{}` to render the data without worrying about XSS. When we reference a string variable,
+                     * this value is inserted as plain string, and not as individual DOM elements.
                      */}
-                    <p
-                        className="mt-2"
-                        // biome-ignore lint/security/noDangerouslySetInnerHtml: intentional for now
-                        dangerouslySetInnerHTML={{
-                            __html: recipe.description,
-                        }}
-                    ></p>
+                    <p className="mt-2">{recipe.description}</p>
                 </div>
 
                 {/* Ingredients */}
