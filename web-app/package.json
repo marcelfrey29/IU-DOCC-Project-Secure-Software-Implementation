@@ -47,7 +47,7 @@
         "@heroui/tabs": "^2.2.21",
         "@heroui/theme": "^2.4.20",
         "@heroui/tooltip": "^2.2.21",
-        "@react-aria/visually-hidden": "^3.8.18",
+        "@react-aria/visually-hidden": "^3.8.27",
         "bootstrap-icons": "^1.13.1",
         "clsx": "^2.1.1",
         "framer-motion": "^12.23.12",
