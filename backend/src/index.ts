@@ -10,7 +10,7 @@ import { validator } from "hono/validator";
 import * as jose from "jose";
 import pino from "pino";
 import { Recipe, RecipeUpdateCreateSchema } from "./model/Recipe.js";
-import { RecipeComment } from "./model/RecipeComment.js";
+import { CommentIdSchema, RecipeComment } from "./model/RecipeComment.js";
 import { ConfigService } from "./service/ConfigService.js";
 import { DatabaseService } from "./service/DatabaseService.js";
 
@@ -557,59 +557,89 @@ app.post("/recipes/:recipeId/comments", async (c) => {
     return c.json(storedComment, 201);
 });
 
-app.get("/recipes/:recipeId/comments", async (c) => {
-    const recipeId = c.req.param("recipeId");
-    logger.info({ recipeId }, "All comments for Recipe requested.");
+app.get(
+    "/recipes/:recipeId/comments",
+    // Validate and sanitize input.
+    // See POST Endpoint for details
+    validator("param", (value, c) => {
+        const recipeId = value.recipeId;
+        const parsed = CommentIdSchema.safeParse(recipeId);
+        if (!parsed.success) {
+            logger.warn(
+                {
+                    validationError: parsed.error.message,
+                    validationIssues: parsed.error.issues,
+                },
+                "Schema Validation failed.",
+            );
+            return c.json({ message: "Bad Request." }, 400);
+        }
+        return { recipeId };
+    }),
+    async (c) => {
+        const { recipeId } = c.req.valid("param");
+        logger.info({ recipeId }, "All comments for Recipe requested.");
 
-    /**
-     * BUG: https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/issues/27
-     *
-     * # Description
-     *
-     * The `recipeId` parameter is used directly in the SQL query which allows SQL Injections.
-     *
-     * Direct usage allows the injection of additional SQL commands which changes the query result.
-     * When the API is used as intended, the integer ID (e.g. `7`) is inserted into the query which
-     * results in the SQL command `comment.recipeId = 7`. As this is used in a `WHERE` statement, this query will only
-     * return comments that belong to the Recipe with the ID `7`.
-     * A threat actor now can manipulate the API call and change the ID to a non-integer value, e.g. `7 OR 1=1`. If this
-     * is done, the resulting SQL statement is `comment.recipeId = 7 OR 1=1` which makes the `WHERE` statement completely
-     * useless because the malicious part `OR 1=1` will cause the `WHERE` to always evaluate to `true`. As result, all
-     * comments stored in the database will be returned to the client.
-     *
-     * Injection vulnerabilities are part of OWASP Top 10 A03:2021 (Injection). The related CWE entry is CWE-89 (Improper
-     * Neutralization of Special Elements used in an SQL Command ('SQL Injection')). The specialized element in this case
-     * is `OR`, which is a SQL command.
-     *
-     * # Impact
-     *
-     * Data can be exfiltrated or manipulated which violates the confidentiality, integrity, and availability
-     * of data.
-     *
-     * # Background
-     *
-     * https://owasp.org/Top10/A03_2021-Injection/
-     * https://cwe.mitre.org/data/definitions/89.html
-     *
-     * # Remediation
-     *
-     * First, all input should be validated against a schema. As our IDs are numbers (integers) we have to ensure that
-     * the provided input really is a number. Even with just this, no SQL Injection would be possible as no SQL Command
-     * or other control character (like `;`) would be accepted.
-     * As security must be implemented in all layers, we also must change the way how we pass data to the query processor.
-     * Input should never be directly used in the SQL command. Instead, variables (parameters) have to be used. Libraries
-     * and SQL engines can then automatically escape the input.
-     * To resolve the issue, we must switch to a parameterized query.
-     */
-    const recipeComments = await (await dbService.getDatabaseManager())
-        .getRepository(RecipeComment)
-        .createQueryBuilder("comment")
-        .where(`comment.recipeId = ${recipeId}`, {})
-        .getMany();
+        /**
+         * BUG: https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/issues/27
+         *
+         * # Description
+         *
+         * The `recipeId` parameter is used directly in the SQL query which allows SQL Injections.
+         *
+         * Direct usage allows the injection of additional SQL commands which changes the query result.
+         * When the API is used as intended, the integer ID (e.g. `7`) is inserted into the query which
+         * results in the SQL command `comment.recipeId = 7`. As this is used in a `WHERE` statement, this query will only
+         * return comments that belong to the Recipe with the ID `7`.
+         * A threat actor now can manipulate the API call and change the ID to a non-integer value, e.g. `7 OR 1=1`. If this
+         * is done, the resulting SQL statement is `comment.recipeId = 7 OR 1=1` which makes the `WHERE` statement completely
+         * useless because the malicious part `OR 1=1` will cause the `WHERE` to always evaluate to `true`. As result, all
+         * comments stored in the database will be returned to the client.
+         *
+         * Injection vulnerabilities are part of OWASP Top 10 A03:2021 (Injection). The related CWE entry is CWE-89 (Improper
+         * Neutralization of Special Elements used in an SQL Command ('SQL Injection')). The specialized element in this case
+         * is `OR`, which is a SQL command.
+         *
+         * # Impact
+         *
+         * Data can be exfiltrated or manipulated which violates the confidentiality, integrity, and availability
+         * of data.
+         *
+         * # Background
+         *
+         * https://owasp.org/Top10/A03_2021-Injection/
+         * https://cwe.mitre.org/data/definitions/89.html
+         *
+         * # Remediation
+         *
+         * First, all input should be validated against a schema. As our IDs are numbers (integers) we have to ensure that
+         * the provided input really is a number. Even with just this, no SQL Injection would be possible as no SQL Command
+         * or other control character (like `;`) would be accepted.
+         * As security must be implemented in all layers, we also must change the way how we pass data to the query processor.
+         * Input should never be directly used in the SQL command. Instead, variables (parameters) have to be used. Libraries
+         * and SQL engines can then automatically escape the input.
+         * To resolve the issue, we must switch to a parameterized query.
+         *
+         * # Fix
+         *
+         * Add Schema Validation as first layer of defense against SQL Injections. See the `validator()` middleware above.
+         * We ensure that only valid IDs (integers) are accepted.
+         * In addition, we switch to a parameterized query by using `:recipeId` in the query and passing the value for it.
+         * The SQL Library takes care of proper escaping of the value. With this, we have two layers of defense against
+         * SQL Injections in place.
+         */
+        const recipeComments = await (await dbService.getDatabaseManager())
+            .getRepository(RecipeComment)
+            .createQueryBuilder("comment")
+            // Use a parameterized query instead of directly inserting the value. The provided value `recipeId` is used for the
+            // parameter `:recipeId` in the  `WHERE` clause. The SQL library takes care of proper escaping of the value.
+            .where(`comment.recipeId = :recipeId`, { recipeId })
+            .getMany();
 
-    logger.info({ recipeId, count: recipeComments.length }, "Got all comments for the Recipe.");
-    return c.json(recipeComments, 200);
-});
+        logger.info({ recipeId, count: recipeComments.length }, "Got all comments for the Recipe.");
+        return c.json(recipeComments, 200);
+    },
+);
 
 app.delete("/recipes/:recipeId/comments/:commentId", async (c) => {
     if (c.get("isAuthenticated") === false) {
