@@ -1,4 +1,14 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import z from "zod";
+
+// Schema for the ID of a comment, used in the Path of the API Endpoints
+// This ensures only valid IDs are provided to the endpoints.
+// Here, we automatically convert string IDs to numbers, as they are provided as strings as part of the URL.
+export const CommentIdSchema = z
+    .string()
+    .regex(/^[1-9][0-9]*$/)
+    .pipe(z.transform((x) => parseInt(x, 10)))
+    .pipe(z.number().int().positive());
 
 @Entity()
 export class RecipeComment {
