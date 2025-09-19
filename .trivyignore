@@ -12,3 +12,17 @@ CVE-2025-7425
 
 # We accept Root-Containers for the University Project
 AVD-DS-0002
+
+# We allow public access to the Auth Service which is public anyway
+# This resource is just a helper to allow cross-namespace network access
+# from backend to auth service
+AVD-KSV-0108
+- kubernetes/authentik-proxy-service.yaml
+
+# PostgreSQL won't work without Root Filsystem
+# Also ignored in Kube-Lint
+AVD-KSV-0014
+- postgres.statefulset.yaml
+
+# We accept the default Security Context
+AVD-KSV-0118
