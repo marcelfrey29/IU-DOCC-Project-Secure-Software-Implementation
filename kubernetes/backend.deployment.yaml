@@ -21,7 +21,7 @@ spec:
             - name: DB_URL
               value: postgres # Name of Postgres Service in K8s (static network endpoint)
             - name: DB_USERNAME
-              value: "social-recipie-db-rw-user"
+              value: ${SOCIAL_RECIPE_DB_USER}
             - name: DB_PASSWORD
               value: ${SOCIAL_RECIPE_DB_PASSWORD}
             - name: AUTH_SERVICE_URL

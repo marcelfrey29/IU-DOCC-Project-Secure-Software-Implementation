@@ -129,10 +129,10 @@ app.use("*", async (c, next) => {
 app.get("/", async (c) => {
     console.log("Handler Called.");
 
-    const recipies = await (await dbService.getDatabaseManager()).find(Recipe);
-    console.log(`Found ${recipies.length} recipies.`);
+    const recipes = await (await dbService.getDatabaseManager()).find(Recipe);
+    console.log(`Found ${recipes.length} recipes.`);
 
-    return c.text(`Hello Hono! 🔥 (${recipies.length} Recipes)`);
+    return c.text(`Hello Hono! 🔥 (${recipes.length} Recipes)`);
 });
 
 app.post(
@@ -378,8 +378,8 @@ app.get("/recipes/:id", async (c) => {
      * CWE 566 is part of CWE-639 (Authorization Bypass Through User-Controlled Key) but as already mentioned that's not
      * the root cause of the vulnerability.
      *
-     * In our case it's also possible to guess the IDs of other recipies as we're using a number as Primary Key which is
-     * increased for every new record. A threat actor can therefore easily scrape recipies by increasing a counter and
+     * In our case it's also possible to guess the IDs of other recipes as we're using a number as Primary Key which is
+     * increased for every new record. A threat actor can therefore easily scrape recipes by increasing a counter and
      * perform the request. To prevent guessing of IDs, a UUID should be used as identifier (and primary key).
      *
      * The root cause of this vulnerability is CWE-862 (Missing Authorization) because ther is no check that compares the

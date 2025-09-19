@@ -39,7 +39,7 @@ export default function RecipesPage() {
         <DefaultLayout>
             <section className="mt-12″ mb-12">
                 <div>
-                    <h1 className="text-3xl text-primary font-bold">Recipies</h1>
+                    <h1 className="text-3xl text-primary font-bold">Recipes</h1>
                     <p className="mt-1">
                         <b>Find new and tasty recipes.</b>
                     </p>

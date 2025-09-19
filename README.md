@@ -25,7 +25,7 @@
 - Add values for the keys in the `.env` file
     - `AUTHENTIK_PG_PASS`: Password for the Authentik PostgreSQL Database (run `openssl rand -base64 36` to generate a value)
     - `AUTHENTIK_SECRET_KEY`: Secret Key for Authentik (run `openssl rand -base64 60` to generate a value)
-    - `SOCIAL_RECIPE_DB_USER`: Any valid PostgreSQL username (e.g. `social-recipie-db-rw-user`)
+    - `SOCIAL_RECIPE_DB_USER`: Any valid PostgreSQL username (e.g. `social-recipe-db-rw-user`)
     - `SOCIAL_RECIPE_DB_PASSWORD`: Password for the Social Recipe Backend PostgreSQL Database (run `openssl rand -base64 36` to generate a value)
 - Deploy the Application into Kubernetes
     - `cd kubernetes`
@@ -52,7 +52,7 @@ For local development (e.g. when running `npm run dev` in the `backend/` directo
 ```bash
 # Backend
 cd backend
-DB_USERNAME="social-recipie-db-rw-user" DB_PASSWORD="<pw>" npm run dev
+DB_USERNAME="social-recipe-db-rw-user" DB_PASSWORD="<pw>" npm run dev
 
 # Web App
 cd web-app
@@ -93,7 +93,7 @@ kubectl delete pv postgres --grace-period=0 --force
 kubectl exec postgres-0 -n social-recipe -it -- /bin/bash
 
 # Run PSQL
-psql --username=social-recipie-db-rw-user socialrecipe
+psql --username=social-recipe-db-rw-user socialrecipe
 ```
 
 #### Security Testing
