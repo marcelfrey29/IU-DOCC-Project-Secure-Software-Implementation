@@ -1,0 +1,11 @@
+# Ignore Debian "Won't Fix" Issues
+CVE-2023-39616
+CVE-2023-52355
+CVE-2023-45853
+
+# Ignore Debian Issues we can't fix (Base Image)
+CVE-2023-6879
+CVE-2025-59375 
+CVE-2023-2953
+CVE-2025-6020
+CVE-2025-7425
