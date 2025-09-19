@@ -342,6 +342,9 @@ app.get("/recipes", async (c) => {
 });
 
 app.get("/recipes/:id", async (c) => {
+    const userId = c.get("userId");
+    const isAuthenticated = c.get("isAuthenticated");
+
     // Get Recipe ID from Path Parameter
     let id: number;
     try {
@@ -399,7 +402,17 @@ app.get("/recipes/:id", async (c) => {
      * Add an explicit ownership check for private recipes by comparing the `ownerUserId` of the `Recipe` entity
      * to the `sub` from the access token of the requesting user.
      * Consider using UUIDs as identifier that can't be easily guessed.
+     *
+     * # Fix
+     *
+     * Check the Recipes `isPrivate` field. If the recipe is private, only the owner of the recipe is allowed to see it.
+     * We therefore must check the `ownerUserId` of the recipe against the `userId` (which is the `sub` from the access token).
+     * It the user doesn't match the owner, we return `403 Forbidden`.
      */
+    if (recipe.isPrivate && recipe.ownerUserId !== userId) {
+        logger.warn({ id, isAuthenticated, userId }, "Deny: User is not the owner of the private Recipe.");
+        return c.json({ message: "Forbidden" }, 403);
+    }
 
     // Return the Recipe to the Client
     return c.json(recipe, 200);
