@@ -1,14 +1,40 @@
 # IU-DOCC-Project-Secure-Software-Implementation
 
-> [!CAUTION] 
-> **For educational purposes, this version of the application and infrastructure definition contains common vulnerabilities and flaws!**
-
 [![Backend CI (Node.js)](https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/actions/workflows/backend-ci.yml)
 [![Web App CI (Node.js)](https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/actions/workflows/web-app-ci.yml/badge.svg)](https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/actions/workflows/web-app-ci.yml)
 [![Kubernetes CI](https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/actions/workflows/kubernetes-ci.yaml/badge.svg)](https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/actions/workflows/kubernetes-ci.yaml)
 [![Terraform CI](https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/actions/workflows/terraform-ci.yml/badge.svg)](https://github.com/marcelfrey29/IU-DOCC-Project-Secure-Software-Implementation/actions/workflows/terraform-ci.yml)
 
-## Prerequisites
+## Social Recipe Application
+
+- [x] Application Development as **Security Champion** using **DevSecOps Principles**
+    - [x] Single Page Web Application (**React, HeroUI, TypeScript**)
+    - [x] Backend Service (**Hono, TypeORM, Zod, TypeScript**) and **PostgreSQL Database** 
+    - [x] **Authentik** as Identity Provider for Login & Registration using OIDC/OAuth
+    - [x] Deployment to **Kubernetes** and configuration via **Terraform**
+- [x] **Threat Modelling** using **AWS Threat Composer** and creation of a **Data-Flow-Diagram (DFD)**
+- [x] Securing the inital vulnerable application using **Best Practices and Recommendations** from the **OWASP Top 10** and **Common Weakness Enumeration (CWE)**
+    - [x] **Detailed Documentation** as reference for other Engineers
+    - [x] **Standardized Security Issue Documentation** by using GitHub Issue Templates
+- [x] Definition and setup of **Vulnerability Detection & Prevention Strategies** and **Quality Assurance**
+    - [x] Usage of Linting & Formatters (**Biome, Kube-Lint**)
+    - [x] **Continuous Integration** with **GitHub Actions**
+    - [x] **Static Application Security Testing (SAST)** using **Bearer CLI** and **Trivy**
+    - [x] Automatic Dependency Updates via **Dependabot**
+
+![Demo of the Social Recipe Application](docs/assets/demo.png)
+
+## Documentation
+
+- [Concept](docs/01-Concept.md): Application Concept & Architecture
+- [Development of the Vulnerable Application](docs/02-Initial-Application-Vulnerable.md)
+- [List of Flaws/Weaknesses/Vulnerabilites](docs/03-Flaws.md): Issue, Category, Mappings (OWASP Top 10, CWE)
+- [Implementation (Vulnerable Version)](docs/04-Implementation.md)
+- [Threat Modelling](docs/05-Threat-Modelling.md): The full Threat Model can be found [here](threat-modelling/threat-model.md)
+- [Vulnerability Detection & Prevention Strategies](docs/06-Security-Processes.md)
+- [Implementation (Secure Version)](docs/07-Secure-Version.md)
+
+## Prerequisites for Development
 
 - A [Kubernetes](https://kubernetes.io/) Cluster (e.g. via Docker Desktop)
 - [Helm](https://helm.sh/) 
