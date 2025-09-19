@@ -38,10 +38,10 @@
     - Open http://auth-service.localhost/ and log-in as admin user (`akadmin`)
     - Go to "Settings" (Gear in the upper right) -> "Tokens and App Passwords"
     - Click "Create Token", add `terraform` as `identifier` and click create
-    - Add the token to the `token` field of the `authentik` provider in `terraform/main.tf`
+        - Use this token in commands below, as described
     - Terraform can't resolve `auth-service.localhost` without a host entry, so we need to create one
         - Edit the `/etc/hosts` file and add the following line: `127.0.0.1    auth-service.localhost`
-    - Run `terraform init` and `terraform apply`, confirm with `yes`
+    - Run `terraform init` and `AUTHENTIK_TOKEN=<token> terraform apply`, confirm with `yes`
 - _The setup is now complete_ 🥳
 
 ## Local Development
