@@ -624,11 +624,16 @@ app.get(
          *
          * Add Schema Validation as first layer of defense against SQL Injections. See the `validator()` middleware above.
          * We ensure that only valid IDs (integers) are accepted.
+         * In addition, we switch to a parameterized query by using `:recipeId` in the query and passing the value for it.
+         * The SQL Library takes care of proper escaping of the value. With this, we have two layers of defense against
+         * SQL Injections in place.
          */
         const recipeComments = await (await dbService.getDatabaseManager())
             .getRepository(RecipeComment)
             .createQueryBuilder("comment")
-            .where(`comment.recipeId = ${recipeId}`, {})
+            // Use a parameterized query instead of directly inserting the value. The provided value `recipeId` is used for the
+            // parameter `:recipeId` in the  `WHERE` clause. The SQL library takes care of proper escaping of the value.
+            .where(`comment.recipeId = :recipeId`, { recipeId })
             .getMany();
 
         logger.info({ recipeId, count: recipeComments.length }, "Got all comments for the Recipe.");
