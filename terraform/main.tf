@@ -64,5 +64,11 @@ provider "authentik" {
   // token. This allows to track changes and create an audit trail ("Who did what and when?"). 
   // The Principle of Least Privilege should be applied too. Everyone (developers and CI/CD systems) should only get the permissions
   // they need to do their job. 
-  token = "LBVJKaF6G9BHt9N9Oa29qblOIuC9wHbI47wWHlFV6B2hqRppzhhhNSJy7d10"
+  //
+  // # Fix
+  //
+  // Remove the `token = "..."` line entirely and set the token via an environment variable.
+  // Run Terraform with "AUTHENTIK_TOKEN=<token> terraform apply". 
+  // Make sure to revoke the token from the repository so that it can no longer be used. This is important because the token remains
+  // in the Git history and can easily be found by threat actors.
 }
