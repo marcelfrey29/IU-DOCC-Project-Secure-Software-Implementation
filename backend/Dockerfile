@@ -40,7 +40,7 @@
 # In general it's a good idea to keep track of the major third-party components because an major update can also come
 # with additional development work in case there are breaking changes. 
 
-FROM node:24-alpine AS base
+FROM node:25-alpine AS base
 
 FROM base AS builder
 
